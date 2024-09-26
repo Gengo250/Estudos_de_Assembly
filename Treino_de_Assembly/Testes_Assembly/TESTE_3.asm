@@ -1,0 +1,19 @@
+TITLE teste
+.MODEL SMALL
+.DATA
+    MSG1 DB 10,13, "MENSAGEMTESTE.$"
+.CODE
+MAIN PROC
+
+    MOV AX, @DATA
+    MOV DS, AX
+
+    MOV AH, 09
+    LEA DX, MSG1
+    INT 21h
+
+    MOV AH, 4Ch
+    INT 21h
+
+    MAIN ENDP 
+    END MAIN
