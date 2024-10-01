@@ -4,8 +4,9 @@ TITLE CALCULADORA
 
 .data
     ; Mensagens gerais
-    msg_prompt db 'Escolha uma opcao (1-Divisao, 2-Multiplicacao, 3-Adicao, 4-Subtracao): $'
+    msg_prompt db 'Escolha uma opcao (1-Divisao, 2-Multiplicacao, 3-Adicao, 4-Subtracao, 0-Sair): $'
     msgInvalid db 13, 10, 'Opcao invalida', 13, 10, '$'
+    msgExit db 13, 10, 'Saindo do programa...', 13, 10, '$'
 
     ; Mensagens para divisao
     msgDividendo db 13, 10, 'Digite o dividendo: $'
@@ -39,6 +40,7 @@ main proc
     mov ax, @data
     mov ds, ax
 
+main_loop:
     ; Exibe mensagem de prompt
     mov dx, offset msg_prompt
     mov ah, 09h
@@ -50,45 +52,49 @@ main proc
     sub al, '0'    ; Converter ASCII para valor numérico
 
     ; Simulando o switch-case com CMP e JE
+    cmp al, 0
+    je sair        ; Se AL == 0, vai para sair do programa
     cmp al, 1
-    je case1    ; Se AL == 1, vai para 'case1'
+    je case1       ; Se AL == 1, vai para 'case1'
     cmp al, 2
-    je case2    ; Se AL == 2, vai para 'case2'
+    je case2       ; Se AL == 2, vai para 'case2'
     cmp al, 3
-    je case3    ; Se AL == 3, vai para 'case3'
+    je case3       ; Se AL == 3, vai para 'case3'
     cmp al, 4
-    je case4    ; Se AL == 4, vai para 'case4'
-    jmp default ; Opcao inválida
+    je case4       ; Se AL == 4, vai para 'case4'
+    jmp default    ; Opcao inválida
 
 case1:
     ; Divisao
     call divisao
-    jmp end_program
+    jmp main_loop
 
 case2:
     ; Multiplicacao
     call multiplicacao
-    jmp end_program
+    jmp main_loop
 
 case3:
     ; Adicao
     call adicao
-    jmp end_program
+    jmp main_loop
 
 case4:
     ; Subtracao
     call subtracao
-    jmp end_program
+    jmp main_loop
 
 default:
     ; Opcao invalida
     mov dx, offset msgInvalid
+    call print_msg_input
+    jmp main_loop
 
-print_msg:
-    mov ah, 09h    ; Função para imprimir string
-    int 21h
+sair:
+    ; Mensagem de saída
+    mov dx, offset msgExit
+    call print_msg_input
 
-end_program:
     ; Finaliza o programa
     mov ah, 4Ch
     int 21h
@@ -248,6 +254,9 @@ print_digit proc
     mov dl, al
     mov ah, 02h    ; Função para imprimir caractere
     int 21h
+    MOV AH,2
+    MOV DL,10
+    INT 21H
     ret
 print_digit endp
 
