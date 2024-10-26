@@ -1,33 +1,21 @@
-TITLE ASSEMBLY-PROVA
-.MODEL SMALL 
+.model small
+.stack 100h
 .DATA
-        MSG1 db 'ax eh maior', 13,10,'$'
-        MSG2 db 'bx eh maior', 13,10, '$'
+.code
+main proc
 
-.CODE
-MAIN PROC
-        mov ax, @DATA
-        mov ds, ax
-        mov ax, 7FFFH
-        mov bx, 8000H
-        mov cx, ax
-        cmp ax, bx
-        jg maior
-        lea dx, MSG2
-        mov ah, 09h
+        mov bl, 3 ;adiciona o valor 3 para o registrador bl
+        mov cl, 3; adiciona o valor 3 para o registrador cl
+
+        add bl, cl; soma bl e cl (3+3)
+        add bl, '0'; converte o resultado ASCII que esta armazenado em bl em hexadecimal 
+
+        mov dl, bl ;move o conteudo de bl para dl para saída do dado
+        mov ah, 2; printa na tela o resultado final (6)
+        int 21h 
+
+        mov ah, 4ch; encerra o programa 
         int 21h
-        mov cx,bx
-        jmp exit
 
-        maior:
-                lea dx, MSG1
-                mov ah, 09h
-                int 21h 
-        exit:
-                mov ah, 4Ch
-                int 21h        
-
-       
-    
-MAIN ENDP
-END MAIN 
+main ENDP
+end main 
