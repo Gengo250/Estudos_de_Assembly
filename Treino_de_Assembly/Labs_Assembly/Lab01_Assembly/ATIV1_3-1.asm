@@ -13,6 +13,7 @@ TITLE Mensagens
  MOV AH,9
  LEA DX,MSG1
  INT 21h
+ 
 ; Lê um caracter do teclado e salva o caracter lido em AL
  MOV AH,1
  INT 21h
