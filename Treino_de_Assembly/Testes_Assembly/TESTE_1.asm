@@ -2,8 +2,9 @@ TITLE mensagem
 .MODEL SMALL 
 .STACK 100H
 .DATA
+
     MSG1 DB 10,13,"Digite o primeiro numero: $"
-    MSG2 DB 10,13,"Digite o segungo numero:  $"
+    MSG2 DB 10,13,"Digite o segundo numero:  $"
     MSG3 DB 10,13,"Resultado: $"
 
 .CODE
