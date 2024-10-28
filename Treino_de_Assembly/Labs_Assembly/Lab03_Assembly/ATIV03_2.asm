@@ -27,9 +27,9 @@ MAIN PROC
 
     ; Verifica se o caractere é um número (0-9)
     CMP BL, 30h       ; 30h é o valor ASCII para '0'
-    JB NAOENUMERO
+    JB NAOENUMERO      ;salta se abaixo de '0'
     CMP BL, 39h       ; 39h é o valor ASCII para '9'
-    JA NAOENUMERO
+    JA NAOENUMERO   ;salta se acima de '9'
 
     ; Se o caractere é um número, exibe a mensagem correspondente
     MOV AH, 9

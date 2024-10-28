@@ -21,10 +21,6 @@ PrimeiroLoop:
     mov ah, 02h
     int 21h
 
-    mov dl, 0Ah        
-    mov ah, 02h
-    int 21h
-
     ; Segundo loop: exibe '*' 50 vezes, um em cada linha
     mov cx, 50          ; Redefine o contador do loop para 50
 

@@ -1,69 +1,68 @@
-.model small
+.model small 
 .stack 100h
-
-.data
-    msg_prompt db 'Escolha uma opcao (1, 2, ou 3): $'
-    msg1 db 13, 10, 'Opcao 1 escolhida', 13, 10, '$'
-    msg2 db 13, 10, 'Opcao 2 escolhida', 13, 10, '$'
-    msg3 db 13, 10, 'Opcao 3 escolhida', 13, 10, '$'
-    msgInvalid db 13, 10, 'Opcao invalida', 13, 10, '$'
-
-.code
+.DATA
+    MSG1 DB 10,13,"DIGITE UM CARACTER: $"
+    MSG2 DB 10,13,"O CARACTER EH UM NUMERO $"
+    MSG3 DB 10,13,"O CARACTER EH UMA LETRA $"
+    MSG4 DB 10,13,"O CARACTER EH DESCONHECIDO $"
+.code 
 main proc
-    mov ax, @data
+    mov ax, @DATA 
     mov ds, ax
 
-    ; Exibe mensagem de prompt
-    mov dx, offset msg_prompt
-    mov ah, 09h
-    int 21h
+    lea dx, MSG1
+    mov ah, 9
+    int 21h 
 
-    ; Leitura da entrada do usuário
-    mov ah, 01h    ; Função 01h - Ler caractere com eco
-    int 21h        ; O valor digitado pelo usuário será retornado em AL
+    mov ah, 1
+    int 21h 
 
-    ; Subtraí '0' (ASCII 48) para converter o caractere para um valor numérico
-    sub al, '0'
+    mov bl, al
 
-    ; Simulando o switch-case com CMP e JE
-    cmp al, 1
-    je case1    ; Se AL == 1, vai para 'case1'
+    cmp bl, '0'
+    jb naoehnum 
+    cmp bl, '9'
+    ja naoehnum 
 
-    cmp al, 2
-    je case2    ; Se AL == 2, vai para 'case2'
+    lea dx, MSG2
+    mov ah, 9
+    int 21h 
 
-    cmp al, 3
-    je case3    ; Se AL == 3, vai para 'case3'
+    jmp fim
 
-    ; Se nenhuma condição for atendida, vai para o default
-    jmp default
+    naoehnum:
+        cmp bl, 'a'
+        jb desconhecido
+        cmp bl, 'z'
+        jbe letra
+        cmp bl, 'A'
+        jb desconhecido
+        cmp bl, 'Z'
+        jbe letra 
+    
+    desconhecido:
 
-case1:
-    ; Mostra mensagem para opção 1
-    mov dx, offset msg1
-    jmp print_msg
+        lea dx, MSG4
+        mov ah, 9
+        int 21h
+        jmp fim 
 
-case2:
-    ; Mostra mensagem para opção 2
-    mov dx, offset msg2
-    jmp print_msg
+    letra:
 
-case3:
-    ; Mostra mensagem para opção 3
-    mov dx, offset msg3
-    jmp print_msg
+        lea dx, MSG3
+        mov ah, 9
+        int 21h 
+        jmp fim 
 
-default:
-    ; Mostra mensagem de opção inválida
-    mov dx, offset msgInvalid
+    fim: 
 
-print_msg:
-    mov ah, 09h    ; Função do DOS para imprimir string
-    int 21h
+        mov ah, 4Ch
+        int 21h
+        
+        
 
-    ; Fim do programa
-    mov ah, 4Ch
-    int 21h
+
+
 
 main endp
-end main
+end main 
