@@ -1,28 +1,24 @@
 .model small
-.stack 100h
+.stack 100h 
+.DATA
+    array db 'a','b','c'; array de três elemnetos 
+.code 
+main proc 
+    mov ax, @DATA ;transporta o array para ax para ser acessado
+    mov ds, ax 
 
-.code
-main proc
-    mov ax, 13h          ; Seleciona o modo gráfico 13h (320x200, 256 cores)
-    int 10h              ; Interrupção do BIOS para definir o modo de vídeo
+    mov si, offset array ;acessa ao conteúdo do array 
 
-    ; Desenha um pixel no meio da tela
-    mov dx, 0A000h       ; Base da memória de vídeo
-    mov es, dx           ; Definir ES como o segmento de memória de vídeo
+    mov cx, 3 ; contador cx = 3 
 
-    mov di, (160 * 100)  ; Calcula a posição do pixel (160, 100)
-    mov al, 15           ; Cor do pixel (15 = branco)
-    stosb                ; Armazena AL no endereço de ES:DI (desenha o pixel)
+    l1:
+        mov dx, [si]
+        mov ah, 2 ;printando os elementos do array 
+        int 21h 
+        inc si 
+    loop l1
 
-    ; Pausa até pressionar uma tecla
-    mov ah, 00h
-    int 16h              ; Função do BIOS para esperar uma tecla
-
-    ; Retorna ao modo de texto 03h
-    mov ax, 03h
-    int 10h              ; Interrupção do BIOS para voltar ao modo texto
-
-    mov ah, 4Ch
-    int 21h              ; Termina o programa
+    mov ah, 4Ch ;encerra o programa 
+    int 21h 
 main endp
-end main
+end main 

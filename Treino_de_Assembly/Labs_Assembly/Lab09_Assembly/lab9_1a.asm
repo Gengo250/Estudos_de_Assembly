@@ -8,8 +8,6 @@ MAIN PROC
 MOV AX, @DATA ; Move os dados de @DATA em AX
 MOV DS,AX ;Inicializa os dados em AX movendo-os a partir de DS
 
-XOR DL, DL ; Zera o registrador DL
-
 MOV CX,6 ; Inicializa CX com 6 (número de elementos do vetor)
 LEA BX, VETOR ; Carrega o endereço do vetor em BX
 

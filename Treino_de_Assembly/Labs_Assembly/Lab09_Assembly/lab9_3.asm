@@ -39,7 +39,7 @@ leitura:
     MOV AH, 01H         ; Função de leitura de caractere (INT 21H)
     INT 21H             ; Lê um caractere do teclado
     CMP AL, 13          ; Verifica se é 'Enter' (código ASCII 13)
-    JE FimLeitura       ; Se for 'Enter', finaliza a leitura
+    JE FimLeitura       ; Se for 'Enter'(al =13), finaliza a leitura
 
     SUB AL, 30H         ; Converte o caractere de ASCII para valor numérico
     MOV [VETOR + BX], AL; Armazena o valor no vetor
