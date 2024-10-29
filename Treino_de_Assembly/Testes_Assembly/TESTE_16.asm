@@ -15,17 +15,19 @@
 
 .code 
 main proc
+
     mov ax, @data 
     mov ds, ax 
-   mov bx, 1 
-   mov cx, 10
+    
+    mov bx, 1 
+    mov cx, 10
 
    l1:
     push cx 
     mov cx, bx 
 
     l2:
-    mov dl, 'b'
+    mov dl, '!'
     mov ah, 2
     int 21h 
     loop l2 
