@@ -4,7 +4,7 @@ title Soma dos elementos da diagonal de uma matriz
 .data
     matriz db 2,0,0,0
            db 0,2,0,0
-           db 0,0,3,0
+           db 0,0,8,0
            db 0,0,0,4
 .code
 main proc

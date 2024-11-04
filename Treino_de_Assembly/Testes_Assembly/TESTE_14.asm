@@ -20,7 +20,7 @@ main proc
 
         mov cx, 3
     l2: 
-        pop dx 
+        pop dx
         mov ah, 2
         int 21h 
         loop l2 

@@ -149,42 +149,44 @@ TITLE BATALHA
 
     ;limpa a tela com a cor
     LIMPATELA PROC
-        MOV AH, 6   ;scroll up
-        INT 10h
-        XOR AL, AL  
-        MOV BH, 3Fh ;background ciano e letra branca
-        XOR CH, CH  ;limite vertical a cima
-        XOR CL, CL  ;limite horzontal a esquerda
-        MOV DL, 80  ;limite horizontal a direita
-        MOV DH, 25  ;limite vertical a baixo
-        INT 10h
-        RET
-    LIMPATELA ENDP
+    MOV AH, 6   ;scroll up
+    INT 10h
+    XOR AL, AL  
+    MOV BH, 0Fh ;background preto e letra branca
+    XOR CH, CH  ;limite vertical a cima
+    XOR CL, CL  ;limite horzontal a esquerda
+    MOV DL, 80  ;limite horizontal a direita
+    MOV DH, 25  ;limite vertical a baixo
+    INT 10h
+    RET
+LIMPATELA ENDP
+
 
     ;"apaga" uma parte da linha 2 e a linnha 3 inteira da tela
-    IMPRIMEESPACO PROC
-        MOVECURSOR 2,42
-        MOV CX,3
-        DNOVO1:
-        MOV AH,0Eh ;imprime 3x o caracter espaco com cor de fundo ciano, linha 2 da tela
-        MOV BH,0
-        MOV AL,32
-        MOV BL,3Fh
-        INT 10H
-        LOOP DNOVO1
+   IMPRIMEESPACO PROC
+    MOVECURSOR 2,42
+    MOV CX,3
+    DNOVO1:
+    MOV AH,0Eh ;imprime 3x o caracter espaco com cor de fundo preto
+    MOV BH,0
+    MOV AL,32
+    MOV BL,0Fh
+    INT 10H
+    LOOP DNOVO1
 
-        MOVECURSOR 3,0
-        MOV CX,80
-        DNOVO2:
-        MOV AH,0Eh ;imprime 80x o caracter espaco com cor de fundo ciano, linha 3 da tela
-        MOV BH,0
-        MOV AL,32
-        MOV BL,3Fh
-        INT 10H
-        LOOP DNOVO2
-        MOVECURSOR 3,0
-        RET
-    IMPRIMEESPACO ENDP
+    MOVECURSOR 3,0
+    MOV CX,80
+    DNOVO2:
+    MOV AH,0Eh ;imprime 80x o caracter espaco com cor de fundo preto
+    MOV BH,0
+    MOV AL,32
+    MOV BL,0Fh
+    INT 10H
+    LOOP DNOVO2
+    MOVECURSOR 3,0
+    RET
+IMPRIMEESPACO ENDP
+
 
     ;exibe a tela inicial
     TELA1 PROC
@@ -825,7 +827,7 @@ TITLE BATALHA
                 ADD BH,4
                 LOOP SOMA12
             MOVECURSOR 6,BH
-            IMPRIMECARACTER 1,88,34h
+            IMPRIMECARACTER 1,BL,0Fh
             CALL IMPRIMEDADOS2
             MOV DL,2
             MOV [DI],DL
@@ -1141,7 +1143,7 @@ TITLE BATALHA
                 ADD BH,4
                 LOOP SOMA12_2
             MOVECURSOR 6,BH
-            IMPRIMECARACTER 1,88,34h
+            IMPRIMECARACTER 1,BL,0Fh
             CALL IMPRIMEDADOS1
             MOV DL,2
             MOV [DI],DL
@@ -1268,7 +1270,7 @@ TITLE BATALHA
                 LOOP SOMA41_2
 
             MOVECURSOR 12,BH
-            IMPRIMECARACTER 1,176,31h
+            IMPRIMECARACTER 1,176,01h
             CALL IMPRIMEDADOS1
             RET
             ACERTOU4_2:
@@ -1282,7 +1284,7 @@ TITLE BATALHA
                 ADD BH,4
                 LOOP SOMA42_2
             MOVECURSOR 12,BH
-            IMPRIMECARACTER 1,88,34h
+            IMPRIMECARACTER 1,88,04h
             CALL IMPRIMEDADOS1
             MOV DL,2
             MOV [DI],DL
@@ -1315,7 +1317,7 @@ TITLE BATALHA
                 LOOP SOMA51_2
 
             MOVECURSOR 14,BH
-            IMPRIMECARACTER 1,176,31h
+            IMPRIMECARACTER 1,176,01h
             CALL IMPRIMEDADOS1
             RET
             ACERTOU5_2:
@@ -1329,7 +1331,7 @@ TITLE BATALHA
                 ADD BH,4
                 LOOP SOMA52_2
             MOVECURSOR 14,BH
-            IMPRIMECARACTER 1,88,34h
+            IMPRIMECARACTER 1,88,04h
             CALL IMPRIMEDADOS1
             MOV DL,2
             MOV [DI],DL
@@ -1362,7 +1364,7 @@ TITLE BATALHA
                 LOOP SOMA61_2
 
             MOVECURSOR 16,BH
-            IMPRIMECARACTER 1,176,31h
+            IMPRIMECARACTER 1,176,01h
             CALL IMPRIMEDADOS1
             RET
             ACERTOU6_2:
@@ -1376,7 +1378,7 @@ TITLE BATALHA
                 ADD BH,4
                 LOOP SOMA62_2
             MOVECURSOR 16,BH
-            IMPRIMECARACTER 1,88,34h
+            IMPRIMECARACTER 1,88,04h
             CALL IMPRIMEDADOS1
             MOV DL,2
             MOV [DI],DL
@@ -1440,7 +1442,7 @@ TITLE BATALHA
         MOV AH, 6   ;scroll up
         INT 10h
         XOR AL, AL  
-        MOV BH, 1Fh ;background azul e letra branca
+        MOV BH, 0Fh ;background preto e letra branca
         MOV CH,9  ;limite vertical a cima
         MOV CL,25  ;limite horzontal a esquerda
         MOV DL,55  ;limite horizontal a direita
@@ -1464,7 +1466,7 @@ TITLE BATALHA
         MOV AH, 6   ;scroll up
         INT 10h
         XOR AL, AL  
-        MOV BH, 1Fh ;background azul e letra branca
+        MOV BH, 0Fh ;background preto e letra branca
         MOV CH,9  ;limite vertical a cima
         MOV CL,25  ;limite horzontal a esquerda
         MOV DL,55  ;limite horizontal a direita
@@ -1488,7 +1490,7 @@ TITLE BATALHA
         MOV AH, 6   ;scroll up
         INT 10h
         XOR AL, AL  
-        MOV BH, 1Fh ;background azul e letra branca
+        MOV BH, 0Fh ;background preto e letra branca
         MOV CH,9  ;limite vertical a cima
         MOV CL,25  ;limite horzontal a esquerda
         MOV DL,55  ;limite horizontal a direita
