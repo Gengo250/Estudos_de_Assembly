@@ -21,7 +21,7 @@ endm
     LINHA DB ?                      ; Armazena a linha inserida pelo usuário
     COLUNA DB ?                     ; Armazena a coluna inserida pelo usuário
     MSG_BEM_VINDO DB 'BEM-VINDO AO JOGO DE GUERRA NAVAL!$'
-    MSG_AUTORES DB 'Desenvolvido por: Miguel Gengo RA:24009007, Ramon Batista RA:00000000$'
+    MSG_AUTORES DB 'Desenvolvido por: Miguel Gengo, Ramon Batista$'
     MSG_CONTINUE DB 'Pressione qualquer tecla para continuar...$'
 
 .CODE
@@ -110,17 +110,36 @@ PROXIMA_ITERACAO:
 MAIN ENDP
 
 APRESENTACAO PROC
+    ; Posiciona o cursor para a mensagem de boas-vindas (linha 10, coluna 22)
+    MOV AH, 02h
+    MOV BH, 0
+    MOV DH, 3      ; Linha 3
+    MOV DL, 22        ; Coluna 22
+    INT 10h
+
     ; Exibe mensagem de boas-vindas
     MOV AH, 9
     LEA DX, MSG_BEM_VINDO
     INT 21H
-    PULA_LINHA
+
+    ; Posiciona o cursor para os nomes dos autores (linha 12, coluna 14)
+    MOV AH, 02h
+    MOV BH, 0
+    MOV DH, 12        ; Linha 12
+    MOV DL, 16       ; Coluna 16
+    INT 10h
 
     ; Exibe nomes dos autores
     MOV AH, 9
     LEA DX, MSG_AUTORES
     INT 21H
-    PULA_LINHA
+
+    ; Posiciona o cursor para a mensagem de continuar (linha 14, coluna 18)
+    MOV AH, 02h
+    MOV BH, 0
+    MOV DH, 18     ; Linha 18
+    MOV DL, 18        ; Coluna 18
+    INT 10h
 
     ; Exibe mensagem para continuar
     MOV AH, 9
@@ -142,7 +161,7 @@ APRESENTACAO PROC
     RET
 APRESENTACAO ENDP
 
-; Função para gerar uma posição aleatória entre 0 e 19
+; Função para gerar uma posição aleatória entre 0 e 99
 GERA_POSICAO PROC
     MOV AH, 0                     ; Lê o contador de ticks do relógio do sistema
     INT 1AH
@@ -153,6 +172,7 @@ GERA_POSICAO PROC
     MOV AX, DX                    ; O valor aleatório está agora em AX
     RET
 GERA_POSICAO ENDP
+
 
 POSICIONA_EMBARCACOES PROC ; Função para posicionar as embarcacoes, posiciona cada uma, pois cada uma tem um tamanho e qtd diferentes
      ;///////////////////////CALL POSICIONA_ENCOURACADO
@@ -168,7 +188,7 @@ POSICIONA_ENCOURACADO PROC
     MOV CX, 1                     ; Número de encouraçados para posicionar
 
 POSICIONA_LOOP:
-    CALL GERA_POSICAO             ; Gera linha aleatóriaS
+    CALL GERA_POSICAO             ; Gera linha aleatória
     MOV SI, AX                    ; Armazena a linha em SI
     CALL GERA_POSICAO             ; Gera coluna aleatória
     MOV DI, AX                    ; Armazena a coluna em DI
@@ -180,7 +200,7 @@ POSICIONA_LOOP:
     ADD AX, DI                    ; AX = linha * 10 + coluna
     MOV BX, AX                    ; Guarda o índice calculado em BX
 
-    ; Aqui você pode adicionar a lógica para verificar se a posição está livre e posicionar a embarcação
+     ;///////////////////////CALL POSICAO_LIVRE
 
     LOOP POSICIONA_LOOP
     RET
