@@ -21,7 +21,9 @@ endm
     LINHA DB ?                      ; Armazena a linha inserida pelo usuário
     COLUNA DB ?                     ; Armazena a coluna inserida pelo usuário
     MSG_BEM_VINDO DB 'BEM-VINDO AO JOGO DE GUERRA NAVAL!$'
-    MSG_AUTORES DB 'Desenvolvido por: Miguel Gengo, Ramon Batista$'
+    MSG_AUTORES1 DB 'Desenvolvido por:$'
+    MSG_AUTORES2 DB 'Miguel Gengo RA:24009007$'
+    MSG_AUTORES3 DB 'Ramon Batista RA:24787061$'
     MSG_CONTINUE DB 'Pressione qualquer tecla para continuar...$'
 
 .CODE
@@ -129,9 +131,40 @@ APRESENTACAO PROC
     MOV DL, 16       ; Coluna 16
     INT 10h
 
-    ; Exibe nomes dos autores
+   ; Posiciona o cursor para a mensagem "Desenvolvido por:" (linha 10, coluna 30)
+    MOV AH, 02h
+    MOV BH, 0
+    MOV DH, 10        ; Linha 10
+    MOV DL, 30        ; Coluna 30
+    INT 10h
+
+    ; Exibe "Desenvolvido por:"
     MOV AH, 9
-    LEA DX, MSG_AUTORES
+    LEA DX, MSG_AUTORES1
+    INT 21H
+
+    ; Posiciona o cursor para o primeiro autor (linha 12, coluna 26)
+    MOV AH, 02h
+    MOV BH, 0
+    MOV DH, 12        ; Linha 12
+    MOV DL, 26        ; Coluna 26
+    INT 10h
+
+    ; Exibe nome e RA do primeiro autor
+    MOV AH, 9
+    LEA DX, MSG_AUTORES2
+    INT 21H
+
+    ; Posiciona o cursor para o segundo autor (linha 14, coluna 26)
+    MOV AH, 02h
+    MOV BH, 0
+    MOV DH, 14        ; Linha 14
+    MOV DL, 26        ; Coluna 26
+    INT 10h
+
+    ; Exibe nome e RA do segundo autor
+    MOV AH, 9
+    LEA DX, MSG_AUTORES3
     INT 21H
 
     ; Posiciona o cursor para a mensagem de continuar (linha 14, coluna 18)
