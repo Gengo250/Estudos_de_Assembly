@@ -21,7 +21,7 @@ endm
     LINHA DB ?                      ; Armazena a linha inserida pelo usuário
     COLUNA DB ?                     ; Armazena a coluna inserida pelo usuário
     MSG_BEM_VINDO DB 'BEM-VINDO AO JOGO DE GUERRA NAVAL!$'
-    MSG_AUTORES DB 'Desenvolvido por: Miguel Gengo, Ramon Batista$'
+    MSG_AUTORES DB 'Desenvolvido por: Miguel Gengo RA:24009007, Ramon Batista RA:00000000$'
     MSG_CONTINUE DB 'Pressione qualquer tecla para continuar...$'
 
 .CODE
