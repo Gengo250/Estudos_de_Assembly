@@ -20,6 +20,9 @@ endm
     NOME DB 20 DUP(?)               ; Espaço para armazenar o nome do usuário
     LINHA DB ?                      ; Armazena a linha inserida pelo usuário
     COLUNA DB ?                     ; Armazena a coluna inserida pelo usuário
+    MSG_BEM_VINDO DB 'BEM-VINDO AO JOGO DE GUERRA NAVAL!$'
+    MSG_AUTORES DB 'Desenvolvido por: Miguel Gengo, Ramon Batista$'
+    MSG_CONTINUE DB 'Pressione qualquer tecla para continuar...$'
 
 .CODE
 MAIN PROC
@@ -32,15 +35,9 @@ MAIN PROC
     XOR CX, CX                     ; Posição inicial no canto superior esquerdo (0,0)
     MOV DX, 184FH                  ; Posição final no canto inferior direito (24,79)
     MOV BH, 07h                    ; Atributo de cor padrão (branco sobre preto)
-    INT 10h                        ; Chama interrupção de vídeo para limpar a tela]
+    INT 10h                        ; Chama interrupção de vídeo para limpar a tela
 
-
-
-
-    ; CALL POSICIONA_EMBARCACOES
-
-
-
+    CALL APRESENTACAO
 
     ; Exibe mensagem para o nome do usuário
     MOV AH, 9
@@ -112,6 +109,39 @@ PROXIMA_ITERACAO:
 
 MAIN ENDP
 
+APRESENTACAO PROC
+    ; Exibe mensagem de boas-vindas
+    MOV AH, 9
+    LEA DX, MSG_BEM_VINDO
+    INT 21H
+    PULA_LINHA
+
+    ; Exibe nomes dos autores
+    MOV AH, 9
+    LEA DX, MSG_AUTORES
+    INT 21H
+    PULA_LINHA
+
+    ; Exibe mensagem para continuar
+    MOV AH, 9
+    LEA DX, MSG_CONTINUE
+    INT 21H
+
+    ; Aguarda qualquer tecla
+    MOV AH, 1
+    INT 21H
+
+    ; Limpa a tela
+    MOV AH, 06h                    ; Função para rolar a tela para cima
+    XOR AL, AL                     ; AL = 0, rola toda a tela
+    XOR CX, CX                     ; Posição inicial no canto superior esquerdo (0,0)
+    MOV DX, 184FH                  ; Posição final no canto inferior direito (24,79)
+    MOV BH, 07h                    ; Atributo de cor padrão (branco sobre preto)
+    INT 10h                        ; Chama interrupção de vídeo para limpar a tela
+
+    RET
+APRESENTACAO ENDP
+
 ; Função para gerar uma posição aleatória entre 0 e 19
 GERA_POSICAO PROC
     MOV AH, 0                     ; Lê o contador de ticks do relógio do sistema
@@ -124,8 +154,6 @@ GERA_POSICAO PROC
     RET
 GERA_POSICAO ENDP
 
-
-
 POSICIONA_EMBARCACOES PROC ; Função para posicionar as embarcacoes, posiciona cada uma, pois cada uma tem um tamanho e qtd diferentes
      ;///////////////////////CALL POSICIONA_ENCOURACADO
      ;///////////////////////CALL POSICIONA_FRAGATA
@@ -135,13 +163,12 @@ POSICIONA_EMBARCACOES PROC ; Função para posicionar as embarcacoes, posiciona 
 POSICIONA_EMBARCACOES ENDP
 
 
-
 ; Função para posicionar o encouraçado (ou outra embarcação) aleatoriamente
 POSICIONA_ENCOURACADO PROC
     MOV CX, 1                     ; Número de encouraçados para posicionar
 
 POSICIONA_LOOP:
-    CALL GERA_POSICAO             ; Gera linha aleatória
+    CALL GERA_POSICAO             ; Gera linha aleatóriaS
     MOV SI, AX                    ; Armazena a linha em SI
     CALL GERA_POSICAO             ; Gera coluna aleatória
     MOV DI, AX                    ; Armazena a coluna em DI
@@ -153,8 +180,10 @@ POSICIONA_LOOP:
     ADD AX, DI                    ; AX = linha * 10 + coluna
     MOV BX, AX                    ; Guarda o índice calculado em BX
 
-    ;///////////////////////CALL POSICAO_LIVRE
+    ; Aqui você pode adicionar a lógica para verificar se a posição está livre e posicionar a embarcação
 
+    LOOP POSICIONA_LOOP
+    RET
 POSICIONA_ENCOURACADO ENDP
 
 END MAIN
