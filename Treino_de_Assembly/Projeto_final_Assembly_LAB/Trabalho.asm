@@ -124,4 +124,37 @@ GERA_POSICAO PROC
     RET
 GERA_POSICAO ENDP
 
+
+
+POSICIONA_EMBARCACOES PROC ; Função para posicionar as embarcacoes, posiciona cada uma, pois cada uma tem um tamanho e qtd diferentes
+     ;///////////////////////CALL POSICIONA_ENCOURACADO
+     ;///////////////////////CALL POSICIONA_FRAGATA
+     ;///////////////////////CALL POSICIONA_SUBMARINO
+     ;///////////////////////CALL POSICIONA_HIDROAVIAO
+    RET
+POSICIONA_EMBARCACOES ENDP
+
+
+
+; Função para posicionar o encouraçado (ou outra embarcação) aleatoriamente
+POSICIONA_ENCOURACADO PROC
+    MOV CX, 1                     ; Número de encouraçados para posicionar
+
+POSICIONA_LOOP:
+    CALL GERA_POSICAO             ; Gera linha aleatória
+    MOV SI, AX                    ; Armazena a linha em SI
+    CALL GERA_POSICAO             ; Gera coluna aleatória
+    MOV DI, AX                    ; Armazena a coluna em DI
+
+    ; Calcula o índice linear na matriz para SI e DI
+    MOV AX, SI
+    MOV BX, 10
+    MUL BX                        ; AX = linha * 10
+    ADD AX, DI                    ; AX = linha * 10 + coluna
+    MOV BX, AX                    ; Guarda o índice calculado em BX
+
+    ;///////////////////////CALL POSICAO_LIVRE
+
+POSICIONA_ENCOURACADO ENDP
+
 END MAIN
