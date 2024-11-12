@@ -32,7 +32,15 @@ MAIN PROC
     XOR CX, CX                     ; Posição inicial no canto superior esquerdo (0,0)
     MOV DX, 184FH                  ; Posição final no canto inferior direito (24,79)
     MOV BH, 07h                    ; Atributo de cor padrão (branco sobre preto)
-    INT 10h                        ; Chama interrupção de vídeo para limpar a tela
+    INT 10h                        ; Chama interrupção de vídeo para limpar a tela]
+
+
+
+
+    ; CALL POSICIONA_EMBARCACOES
+
+
+
 
     ; Exibe mensagem para o nome do usuário
     MOV AH, 9
@@ -52,6 +60,7 @@ POSICAO_LOOP:
     MOV AH, 9
     LEA DX, MSG_POS
     INT 21H
+    PULA_LINHA
 
     ; Recebe a linha
     MOV AH, 1           ; Função para ler um caractere
@@ -84,6 +93,7 @@ POSICAO_LOOP:
     MOV AH, 9
     LEA DX, MSG_OK
     INT 21H
+    PULA_LINHA
     JMP PROXIMA_ITERACAO
 
 POSICAO_OCUPADA:
@@ -91,6 +101,7 @@ POSICAO_OCUPADA:
     MOV AH, 9
     LEA DX, MSG_OCUPADA
     INT 21H
+    PULA_LINHA
 
 PROXIMA_ITERACAO:
     LOOP POSICAO_LOOP
@@ -100,4 +111,17 @@ PROXIMA_ITERACAO:
     INT 21H
 
 MAIN ENDP
+
+; Função para gerar uma posição aleatória entre 0 e 19
+GERA_POSICAO PROC
+    MOV AH, 0                     ; Lê o contador de ticks do relógio do sistema
+    INT 1AH
+    MOV AX, DX                    ; Usa o valor de DX como base para o número aleatório
+    MOV CX, 100                   ; Define o divisor para o valor máximo (100 para 0-99)
+    XOR DX, DX                    ; Limpa DX antes da divisão
+    DIV CX                        ; AX = Quociente; DX = Resto
+    MOV AX, DX                    ; O valor aleatório está agora em AX
+    RET
+GERA_POSICAO ENDP
+
 END MAIN
