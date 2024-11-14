@@ -11,13 +11,78 @@ PULA_LINHA macro
     POP AX
 endm
 
+LIMPA_TELA macro
+    MOV AH, 06h                    ; Função para rolar a tela para cima
+    XOR AL, AL                     ; AL = 0, rola toda a tela
+    XOR CX, CX                     ; Posição inicial no canto superior esquerdo (0,0)
+    MOV DX, 184FH                  ; Posição final no canto inferior direito (24,79)
+    MOV BH, 07h                    ; Atributo de cor padrão (branco sobre preto)
+    INT 10h                        ; Chama interrupção de vídeo para limpar a tela
+endm
+
 .DATA
-    MATRIZ DB 100 DUP(0)           ; MATRIZ 10x10 INICIALIZADA COM ZEROS (100 POSIÇÕES)
+
+     MATRIZ_INICIAL  DB 10 DUP(10 DUP("X")) ; Matriz inicial
+
+
+     MATRIZ     DB 0, 1, 1, 0, 0, 0, 0, 1, 0, 0    ; Linha 1 sub
+                DB 0, 0, 0, 0, 0, 0, 0, 1, 1, 0    ; Linha 2 hidro
+                DB 0, 0, 0, 0, 0, 0, 0, 1, 0, 0    ; Linha 3
+                DB 0, 0, 0, 1, 1, 1, 1, 0, 0, 0    ; Linha 4 Encouraçado
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 5
+                DB 0, 0, 0, 0, 0, 1, 1, 1, 0, 0    ; Linha 6 Fragnata
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 7 
+                DB 0, 0, 0, 0, 0, 0, 1, 0, 0, 0    ; Linha 8
+                DB 0, 1, 1, 0, 0, 0, 1, 1, 0, 0    ; Linha 9 submarino // hidro  
+                DB 0, 0, 0, 0, 0, 0, 1, 0, 0, 0    ; Linha 10 
+
+        ;Segundo Mapa
+
+     MATRIZ_2   DB 0, 0, 0, 0, 0, 0, 1, 1, 1, 1    ; Linha 1 encouracado
+                DB 0, 0, 1, 1, 1, 0, 0, 0, 0, 0    ; Linha 2 fragnata
+                DB 0, 0, 0, 0, 0, 0, 0, 1, 1, 0    ; Linha 3 submarino
+                DB 0, 1, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 4 submarino
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 5
+                DB 0, 0, 0, 0, 1, 0, 0, 0, 0, 0    ; Linha 6
+                DB 0, 0, 0, 0, 1, 1, 0, 0, 0, 0    ; Linha 7 hidro
+                DB 0, 1, 0, 0, 1, 0, 0, 0, 0, 0    ; Linha 8
+                DB 0, 1, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 9 hidro  
+                DB 0, 1, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 10
+
+        ;Terceiro Mapa
+
+    MATRIZ_3    DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 1 
+                DB 0, 0, 0, 1, 1, 0, 1, 1, 0, 0    ; Linha 2 submarino e submarino
+                DB 1, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 3 
+                DB 1, 1, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 4 hidro
+                DB 1, 0, 0, 1, 1, 1, 1, 0, 0, 0    ; Linha 5 encouracado
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 6
+                DB 0, 1, 1, 1, 0, 0, 0, 0, 0, 0    ; Linha 7 fragnata
+                DB 1, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 8
+                DB 1, 1, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 9 hidro  
+                DB 1, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 10
+
+        ;Quarto Mapa
+
+    MATRIZ_4    DB 0, 0, 0, 0, 0, 0, 0, 1, 1, 1    ; Linha 1 fragnata
+                DB 0, 0, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 2 
+                DB 0, 0, 1, 1, 0, 1, 1, 0, 0, 0    ; Linha 3 submarino e hidro
+                DB 0, 0, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 4 
+                DB 1, 1, 0, 0, 0, 0, 0, 0, 1, 0    ; Linha 5 submarino
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 1, 1    ; Linha 6 hidro
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 1, 0    ; Linha 7 
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 8
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 9  
+                DB 1, 1, 1, 1, 0, 0, 0, 0, 0, 0    ; Linha 10 encouracado
+
+
+
+
     MSG_NOME DB "Informe seu nome: $"
     MSG_POS DB "Entre com uma posicao (linha e coluna, de 0 a 9): $"
-    MSG_OCUPADA DB "A posicao ja esta ocupada! Tente novamente.$"
-    MSG_OK DB "Posicao marcada com sucesso!$"
-    NOME DB 20 DUP(?)               ; Espaço para armazenar o nome do usuário
+    MSG_OCUPADA DB "ERROU! $"
+    MSG_OK DB "ACERTOU! $"
+    NOME DB 20 DUP(0)               ; Espaço para armazenar o nome do usuário
     LINHA DB ?                      ; Armazena a linha inserida pelo usuário
     COLUNA DB ?                     ; Armazena a coluna inserida pelo usuário
     MSG_BEM_VINDO DB 'BEM-VINDO AO JOGO DE GUERRA NAVAL!$'
@@ -31,31 +96,20 @@ MAIN PROC
     MOV AX, @DATA
     MOV DS, AX
 
-    ; Limpa a tela
-    MOV AH, 06h                    ; Função para rolar a tela para cima
-    XOR AL, AL                     ; AL = 0, rola toda a tela
-    XOR CX, CX                     ; Posição inicial no canto superior esquerdo (0,0)
-    MOV DX, 184FH                  ; Posição final no canto inferior direito (24,79)
-    MOV BH, 07h                    ; Atributo de cor padrão (branco sobre preto)
-    INT 10h                        ; Chama interrupção de vídeo para limpar a tela
-
+    LIMPA_TELA
     CALL APRESENTACAO
+    CALL PEDE_NOME
+    CALL APAGA
+    CALL IMPRIMIR
 
-    ; Exibe mensagem para o nome do usuário
-    MOV AH, 9
-    LEA DX, MSG_NOME
-    INT 21H
-
-    ; Recebe o nome do usuário (máx 20 caracteres)
-    MOV AH, 0AH
-    LEA DX, NOME
-    INT 21H
 
     ; Loop para pedir posições 20 vezes
     MOV CX, 20
 
+
 POSICAO_LOOP:
     ; Exibe mensagem para inserir a posição
+
     MOV AH, 9
     LEA DX, MSG_POS
     INT 21H
@@ -207,36 +261,54 @@ GERA_POSICAO PROC
 GERA_POSICAO ENDP
 
 
-POSICIONA_EMBARCACOES PROC ; Função para posicionar as embarcacoes, posiciona cada uma, pois cada uma tem um tamanho e qtd diferentes
-     ;///////////////////////CALL POSICIONA_ENCOURACADO
-     ;///////////////////////CALL POSICIONA_FRAGATA
-     ;///////////////////////CALL POSICIONA_SUBMARINO
-     ;///////////////////////CALL POSICIONA_HIDROAVIAO
+PEDE_NOME PROC 
+     ; Exibe mensagem para o nome do usuário
+    MOV NOME, 20
+    MOV AH, 9
+    LEA DX, MSG_NOME
+    INT 21H
+
+    ; Recebe o nome do usuário (máx 20 caracteres)
+    MOV AH, 0AH
+    LEA DX, NOME
+    INT 21H
     RET
-POSICIONA_EMBARCACOES ENDP
+PEDE_NOME ENDP
 
 
-; Função para posicionar o encouraçado (ou outra embarcação) aleatoriamente
-POSICIONA_ENCOURACADO PROC
-    MOV CX, 1                     ; Número de encouraçados para posicionar
+IMPRIMIR PROC
+    XOR SI, SI
+    XOR BX, BX
+    MOV CH, 10
+IMPRIMECOLUNA:
+    MOV CL, 10
 
-POSICIONA_LOOP:
-    CALL GERA_POSICAO             ; Gera linha aleatória
-    MOV SI, AX                    ; Armazena a linha em SI
-    CALL GERA_POSICAO             ; Gera coluna aleatória
-    MOV DI, AX                    ; Armazena a coluna em DI
+ESCREVELINHA:
+    MOV DL, MATRIZ_INICIAL[SI+BX]
+    OR DL, 30H
+    MOV AH, 2
+    INT 21H
+    MOV DL, ' '
+    INT 21H 
+    MOV DL, ' ' 
+    INT 21H                         
+    INC SI
+    DEC CL
+    JNZ ESCREVELINHA
+    PULA_LINHA
+    ADD BX, 4
+    XOR SI, SI
 
-    ; Calcula o índice linear na matriz para SI e DI
-    MOV AX, SI
-    MOV BX, 10
-    MUL BX                        ; AX = linha * 10
-    ADD AX, DI                    ; AX = linha * 10 + coluna
-    MOV BX, AX                    ; Guarda o índice calculado em BX
-
-     ;///////////////////////CALL POSICAO_LIVRE
-
-    LOOP POSICIONA_LOOP
+    DEC CH
+    JNZ IMPRIMECOLUNA
     RET
-POSICIONA_ENCOURACADO ENDP
+IMPRIMIR ENDP
+
+APAGA PROC                                                       ;Funcao feita para a limpeza de telas
+                          MOV         AH,0
+                          MOV         AL,3
+                          INT         10H
+                          RET
+APAGA ENDP
 
 END MAIN
