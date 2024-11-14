@@ -99,8 +99,6 @@ MAIN PROC
     LIMPA_TELA
     CALL APRESENTACAO
     CALL PEDE_NOME
-    CALL APAGA
-    CALL IMPRIMIR
 
 
     ; Loop para pedir posições 20 vezes
@@ -108,6 +106,8 @@ MAIN PROC
 
 
 POSICAO_LOOP:
+    CALL APAGA
+    CALL IMPRIMIR
     ; Exibe mensagem para inserir a posição
 
     MOV AH, 9
@@ -140,13 +140,13 @@ POSICAO_LOOP:
     JNE POSICAO_OCUPADA
 
     ; Marca a posição com o valor 1
-    MOV MATRIZ[SI], 1
+    MOV MATRIZ_INICIAL[SI], 0
 
     ; Exibe mensagem de sucesso
     MOV AH, 9
     LEA DX, MSG_OK
     INT 21H
-    PULA_LINHA
+    
     JMP PROXIMA_ITERACAO
 
 POSICAO_OCUPADA:
@@ -154,7 +154,8 @@ POSICAO_OCUPADA:
     MOV AH, 9
     LEA DX, MSG_OCUPADA
     INT 21H
-    PULA_LINHA
+    MOV MATRIZ_INICIAL[SI], 1
+    
 
 PROXIMA_ITERACAO:
     LOOP POSICAO_LOOP
@@ -310,5 +311,12 @@ APAGA PROC                                                       ;Funcao feita p
                           INT         10H
                           RET
 APAGA ENDP
+
+
+COMPARA PROC
+    
+
+
+COMPARA ENDP
 
 END MAIN
