@@ -237,6 +237,8 @@ ESCOLHER_COORDENADA:
     SUB AL, '0'              ; Converte ASCII para valor numérico
     MOV BL, AL               ; Armazena a linha em BL
 
+    PULA_LINHA
+
     ; Exibe mensagem para escolher a coluna
     MOV AH, 09H
     LEA DX, MSG_COLUNA
@@ -294,6 +296,7 @@ COORDENADA_REPETIDA:  ; Exibe mensagem de coordenada repetida
     MOV AH, 09H
     LEA DX, MSG_REPETIDO
     INT 21H
+    PULA_LINHA
     JMP ESCOLHER_COORDENADA
     PULA_LINHA
 
