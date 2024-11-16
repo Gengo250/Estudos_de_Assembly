@@ -1,38 +1,75 @@
+TITLE BATTLE SHIP GAME 
 .MODEL SMALL
-.STACK 100H
+.STACK 100h
 
-PULA_LINHA macro
+PULA_LINHA MACRO
     PUSH AX
     PUSH DX
-    MOV AH,02
-    MOV DL,10
-    INT 21H
+    MOV  AH, 02h
+    MOV  DL, 10
+    INT  21h
+    POP  DX
+    POP  AX
+ENDM
+
+PUSH_T MACRO
+    PUSH AX
+    PUSH BX
+    PUSH CX
+    PUSH DX
+ENDM
+
+POP_T MACRO
     POP DX
+    POP CX
+    POP BX
     POP AX
-endm
-
-LIMPA_TELA macro
-    MOV AH, 06h                    ; Função para rolar a tela para cima
-    XOR AL, AL                     ; AL = 0, rola toda a tela
-    XOR CX, CX                     ; Posição inicial no canto superior esquerdo (0,0)
-    MOV DX, 184FH                  ; Posição final no canto inferior direito (24,79)
-    MOV BH, 07h                    ; Atributo de cor padrão (branco sobre preto)
-    INT 10h                        ; Chama interrupção de vídeo para limpar a tela
-endm
-
-PUSH_ALL MACRO
-             PUSH AX
-             PUSH BX
-             PUSH CX
-             PUSH DX
 ENDM
 
 .DATA
+    COLUNAS      DB "  [0][1][2][3][4][5][6][7][8][9] $"
+         
+    ESPACE       DB 10,13,"$"
+    MSG_LINHA    DB "ESCOLHA A LINHA (0 a 9): $"
+    MSG_COLUNA   DB "ESCOLHA A COLUNA (0 a 9): $"
+    ACERTO       DB "ACERTOU $"
+    ERROU        DB "ERROU $"
+    MSG_FIM      DB "Jogo terminado! Todos os navios foram afundados! $"
+    MSG_REPETIDO DB "Insira outra posicao, posicao ja escolhida $"
+    MATRIZ_1    DB '0', '1', '1', '0', '0', '0', '0', '1', '0', '0'    ; Linha 1 sub
+                DB '0', '0', '0', '0', '0', '0', '0', '1', '1', '0'    ; Linha 2 hidro
+                DB '0', '0', '0', '0', '0', '0', '0', '1', '0', '0'    ; Linha 3
+                DB '0', '0', '0', '1', '1', '1', '1', '0', '0', '0'    ; Linha 4 Encouraçado
+                DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 5
+                DB '0', '0', '0', '0', '0', '1', '1', '1', '0', '0'    ; Linha 6 Fragnata
+                DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 7
+                DB '0', '0', '0', '0', '0', '0', '1', '0', '0', '0'    ; Linha 8
+                DB '0', '1', '1', '0', '0', '0', '1', '1', '0', '0'    ; Linha 9 submarino // hidro
+                DB '0', '0', '0', '0', '0', '0', '1', '0', '0', '0'    ; Linha 10
+                   
+    MATRIZ_2    DB '0', '0', '0', '0', '0', '0', '1', '1', '1', '1'    ; Linha 1 encouracado
+                DB '0', '0', '1', '1', '1', '0', '0', '0', '0', '0'    ; Linha 2 fragnata
+                DB '0', '0', '0', '0', '0', '0', '0', '1', '1', '0'    ; Linha 3 submarino
+                DB '0', '1', '1', '0', '0', '0', '0', '0', '0', '0'    ; Linha 4 submarino
+                DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 5
+                DB '0', '0', '0', '0', '1', '0', '0', '0', '0', '0'    ; Linha 6
+                DB '0', '0', '0', '0', '1', '1', '0', '0', '0', '0'    ; Linha 7 hidro
+                DB '0', '1', '0', '0', '1', '0', '0', '0', '0', '0'    ; Linha 8
+                DB '0', '1', '1', '0', '0', '0', '0', '0', '0', '0'    ; Linha 9 hidro  
+                DB '0', '1', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 10 
 
-     MATRIZ_INICIAL  DB 10 DUP(10 DUP("X")) ; Matriz inicial
+    MATRIZ_3    DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 1 
+                DB '0', '0', '0', '1', '1', '0', '1', '1', '0', '0'    ; Linha 2 submarino e submarino
+                DB '1', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 3 
+                DB '1', '1', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 4 hidro
+                DB '1', '0', '0', '1', '1', '1', '1', '0', '0', '0'    ; Linha 5 encouracado
+                DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 6
+                DB '0', '1', '1', '1', '0', '0', '0', '0', '0', '0'    ; Linha 7 fragnata
+                DB '1', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 8
+                DB '1', '1', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 9 hidro  
+                DB '1', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 10
 
-
-     MATRIZ     DB '0', '0', '0', '0', '0', '0', '0', '1', '1', '1'    ; Linha 1 fragnata
+    MATRIZ_4    DB '0', '0', '0', '0', '0', '0', '0', '1', '1', '1'    ; Linha 1 fragnata
                 DB '0', '0', '1', '0', '0', '0', '0', '0', '0', '0'    ; Linha 2 
                 DB '0', '0', '1', '1', '0', '1', '1', '0', '0', '0'    ; Linha 3 submarino e hidro
                 DB '0', '0', '1', '0', '0', '0', '0', '0', '0', '0'    ; Linha 4 
@@ -42,155 +79,220 @@ ENDM
                 DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 8
                 DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 9  
                 DB '1', '1', '1', '1', '0', '0', '0', '0', '0', '0'    ; Linha 10 encouracado
+    MATRIZ_TIRO  DB 10 DUP(10 DUP('X'))                                              ; Inicializa uma matriz 10x10 com '*'
+    CONTADOR_O   DB 19                                                               ; Inicializa o contador de 'O' (25 'O' na MATRIZ_1)
 
-        ;Segundo Mapa
-
-     MATRIZ_2   DB 0, 0, 0, 0, 0, 0, 1, 1, 1, 1    ; Linha 1 encouracado
-                DB 0, 0, 1, 1, 1, 0, 0, 0, 0, 0    ; Linha 2 fragnata
-                DB 0, 0, 0, 0, 0, 0, 0, 1, 1, 0    ; Linha 3 submarino
-                DB 0, 1, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 4 submarino
-                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 5
-                DB 0, 0, 0, 0, 1, 0, 0, 0, 0, 0    ; Linha 6
-                DB 0, 0, 0, 0, 1, 1, 0, 0, 0, 0    ; Linha 7 hidro
-                DB 0, 1, 0, 0, 1, 0, 0, 0, 0, 0    ; Linha 8
-                DB 0, 1, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 9 hidro  
-                DB 0, 1, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 10
-
-        ;Terceiro Mapa
-
-    MATRIZ_3    DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 1 
-                DB 0, 0, 0, 1, 1, 0, 1, 1, 0, 0    ; Linha 2 submarino e submarino
-                DB 1, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 3 
-                DB 1, 1, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 4 hidro
-                DB 1, 0, 0, 1, 1, 1, 1, 0, 0, 0    ; Linha 5 encouracado
-                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 6
-                DB 0, 1, 1, 1, 0, 0, 0, 0, 0, 0    ; Linha 7 fragnata
-                DB 1, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 8
-                DB 1, 1, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 9 hidro  
-                DB 1, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 10
-
-        ;Quarto Mapa
-
-    MATRIZ_4    DB 0, 0, 0, 0, 0, 0, 0, 1, 1, 1    ; Linha 1 fragnata
-                DB 0, 0, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 2 
-                DB 0, 0, 1, 1, 0, 1, 1, 0, 0, 0    ; Linha 3 submarino e hidro
-                DB 0, 0, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 4 
-                DB 1, 1, 0, 0, 0, 0, 0, 0, 1, 0    ; Linha 5 submarino
-                DB 0, 0, 0, 0, 0, 0, 0, 0, 1, 1    ; Linha 6 hidro
-                DB 0, 0, 0, 0, 0, 0, 0, 0, 1, 0    ; Linha 7 
-                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 8
-                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 9  
-                DB 1, 1, 1, 1, 0, 0, 0, 0, 0, 0    ; Linha 10 encouracado
-
-
-
-
-    MSG_NOME DB "Informe seu nome: $"
-    MSG_POS DB "Entre com uma posicao (linha e coluna, de 0 a 9): $"
-    MSG_OCUPADA DB "Voce ja digito essa posicao, digite outra posicao! $"
-    MSG_OK DB "ACERTOU! $"
-    NOME DB 20 DUP(0)               ; Espaço para armazenar o nome do usuário
-    LINHA DB ?                      ; Armazena a linha inserida pelo usuário
-    COLUNA DB ?                     ; Armazena a coluna inserida pelo usuário
     MSG_BEM_VINDO DB 'BEM-VINDO AO JOGO DE GUERRA NAVAL!$'
     MSG_AUTORES1 DB 'Desenvolvido por:$'
     MSG_AUTORES2 DB 'Miguel Gengo RA:24009007$'
     MSG_AUTORES3 DB 'Ramon Batista RA:24787061$'
     MSG_CONTINUE DB 'Pressione qualquer tecla para continuar...$'
 
+    MSG_ACERTOU DB 'ACERTOU!'
+    MSG_ERROU DB 'ERROU'
+
 .CODE
 MAIN PROC
-    MOV AX, @DATA
-    MOV DS, AX
+    MOV  AX, @DATA
+    MOV  DS, AX
 
-    LIMPA_TELA
-    CALL APRESENTACAO
-    CALL PEDE_NOME
+    CALL LIMPAR
+    CALL APRESENTACAO                          
+    CALL IMPRIMIR_MASCARADA
+                     
 
+    MOV  CX, 30  ; O jogador tem 30 chances de acertar o navio
+    LOOP_PRINCIPAL:                                  
+        CALL COMPARA_MATRIZ
+        pula_linha
+        CALL IMPRIMIR_MASCARADA
+        pula_linha
 
-    ; Loop para pedir posições 20 vezes
-    MOV CX, 20
+        ; Verifica se a partida acabou
+        MOV  AL, CONTADOR_O
+        CMP  AL, 0
+        ; Se ele acertar todas as posicoes, em menos de 30 chances, ele ganha.
+        LOOP LOOP_PRINCIPAL
 
-
-POSICAO_LOOP:
-
-    PUSH_ALL
-
-    CALL APAGA
-    CALL IMPRIMIR
-    ; Exibe mensagem para inserir a posição
-
-
-    MOV AH, 9
-    LEA DX, MSG_POS
-    INT 21H
-    PULA_LINHA
-
-    ; Recebe a linha
-    MOV AH, 1           ; Função para ler um caractere
-    INT 21H
-    SUB AL, '0'         ; Converte ASCII para valor numérico
-    MOV LINHA, AL
-    
-
-    ; Recebe a coluna
-    MOV AH, 1           ; Função para ler um caractere
-    INT 21H
-    SUB AL, '0'         ; Converte ASCII para valor numérico
-    MOV COLUNA, AL
-
-    ; Calcula o índice da matriz 10x10: índice = linha * 10 + coluna
-    MOV AL, LINHA
-    MOV BL, 10
-    MUL BL              ; AL = linha * 10
-    ADD AL, COLUNA      ; AL = linha * 10 + coluna
-    MOV SI, AX          ; Guarda o índice na matriz
-
-    ; Verifica se a posição já está ocupada na matriz que eh exibida
-    MOV AL, MATRIZ_INICIAL[SI]
-    CMP AL, "1"
-    JE POSICAO_OCUPADA
-
-
-     ; Matriz livre, e verfica se o usuaaio acertout
-    MOV AL, MATRIZ[SI]
-    CMP AL, "1"
-    JE ACERTOU
-    JNE ERROU
-
-ACERTOU:
-    MOV MATRIZ_INICIAL[SI], 1
-    MOV AH, 9
-    LEA DX, MSG_OK
-    INT 21H
-    JMP PROXIMA_ITERACAO
-
-ERROU:
-    MOV MATRIZ_INICIAL[SI], 0
-    MOV AH, 9
-    LEA DX, MSG_OK
-    INT 21H
-    JMP PROXIMA_ITERACAO
-
-
-POSICAO_OCUPADA:
-    ; Exibe mensagem que o usuario ja digitou esse numero
-    MOV AH, 9
-    LEA DX, MSG_OCUPADA
-    INT 21H
-    JMP POSICAO_LOOP
-
-
-    
-
-PROXIMA_ITERACAO:
-    LOOP POSICAO_LOOP
-
-    ; Termina o programa
-    MOV AH, 4CH
-    INT 21H
-
+    FIM_DE_JOGO:          
+    ; Exibe mensagem de fim de jogo
+    MOV  AH, 09H
+    LEA  DX, MSG_FIM
+    INT  21H
+    MOV  AH, 4Ch
+    INT  21H
 MAIN ENDP
+
+IMPRIMIR_MASCARADA PROC
+    PUSH_T
+
+    XOR BX, BX
+    MOV CX, 10                      
+
+    ; Exibe a mensagem de colunas apenas uma vez
+    MOV AH, 09H
+    LEA DX, COLUNAS
+    INT 21H
+
+    ; Pula uma linha antes de imprimir a matriz
+    pula_linha
+
+    LINHA:                
+                          CALL        IMPRIMIR_NUMERO_LINHA       ; Chama a função para imprimir o número da linha
+
+    ; Exibe a matriz de jogo
+                          XOR         SI, SI                      ; Redefine SI para 0 no início de cada linha
+                          MOV         CX, 10                      ; Configura o contador para 10 colunas por linha
+
+    LINHA_IMPRIMIR:       
+                          MOV         AH, 02H
+                          MOV         DL, MATRIZ_TIRO[BX + SI]    ; Carrega o valor atual da matriz em DL
+                          INT         21H                         ; Exibe o caractere
+
+    ; Adiciona mais espaço após cada caractere
+                          MOV         DL, ' '                     ; Caractere de espaço
+                          INT         21H                         ; Exibe o espaço
+
+    ; Adiciona um espaço extra para aumentar a distância entre as colunas
+                          MOV         DL, ' '                     ; Caractere de espaço extra
+                          INT         21H                         ; Exibe o espaço extra
+                     
+                          INC         SI                          ; Incrementa SI para acessar a próxima coluna
+                          LOOP        LINHA_IMPRIMIR              ; Repete até que todas as 10 colunas sejam exibidas
+
+    ; Adiciona espaçamento extra entre as linhas
+                          pula_linha                              ; Pula para a próxima linha
+                     
+                          ADD         BX, 10                      ; Passa para a próxima linha na matriz (10 elementos à frente)
+                          CMP         BX, 100                     ; Verifica se todas as linhas foram exibidas
+                          JL          LINHA                       ; Se não, continua para a próxima linha
+
+                          POP_T
+                          RET
+
+IMPRIMIR_MASCARADA ENDP
+
+    ; Nova função para imprimir o número da linha
+IMPRIMIR_NUMERO_LINHA PROC
+    ; Divide BX por 10 para obter o número da linha
+                          MOV         AX, BX
+                          MOV         CX, 10
+                          XOR         DX, DX                      ; Limpa DX antes da divisão
+                          DIV         CX                          ; AX = BX / 10, DX = resto (não usado)
+
+    ; O resultado da divisão está agora em AL
+                          MOV         DL, AL                      ; Carrega o número da linha em DL
+                          ADD         DL, '0'                     ; Converte para caractere ASCII
+                          MOV         AH, 02H
+                          INT         21H                         ; Exibe o número da linha
+
+    ; Adiciona espaçamento horizontal entre a linha e a matriz
+                          MOV         DL, ' '                     ; Caractere de espaço
+                          INT         21H                         ; Exibe o espaço
+
+    ; Adiciona mais espaços para garantir o alinhamento
+                          MOV         DL, ' '                     ; Caractere de espaço
+                          INT         21H                         ; Exibe o espaço
+                    
+
+                          RET
+IMPRIMIR_NUMERO_LINHA ENDP
+COMPARA_MATRIZ PROC
+                          PUSH_T
+
+    ; Loop para garantir que a coordenada não foi escolhida anteriormente
+    ESCOLHER_COORDENADA:  
+    ; Exibe mensagem para escolher a linha
+                          MOV         AH, 09H
+                          LEA         DX, MSG_LINHA
+                          INT         21H
+
+    ; Entrada para linha
+                          MOV         AH, 01H
+                          INT         21H
+                          CMP         AL, '0'
+                          JAE         LINHA_ENTRADA_UNICA         ; Se a primeira tecla for "0" ou maior, vai para entrada única
+
+    ; Se a primeira tecla for menor que "0", repete a entrada
+                          JMP         ESCOLHER_COORDENADA
+
+    LINHA_ENTRADA_UNICA:  
+                          SUB         AL, '0'                     ; Ajusta para índice (0 a 9)
+                          MOV         BL, AL                      ; Armazena linha em BL
+
+    ; Calcula o índice de linha na matriz
+                          MOV         BH, 0                       ; Limpa BH para usar BX como índice de 16 bits
+                          MOV         AX, BX
+                          MOV         CX, 10
+                          MUL         CX                          ; Multiplica linha por 10 (BX = linha * 10)
+                          MOV         BX, AX                      ; Coloca o resultado em BX
+                          pula_linha
+    ; Exibe mensagem para escolher a coluna
+                          MOV         AH, 09H
+                          LEA         DX, MSG_COLUNA
+                          INT         21H
+
+    ; Entrada para coluna
+                          MOV         AH, 01H
+                          INT         21H
+                          CMP         AL, '0'
+                          JAE         COLUNA_ENTRADA_UNICA        ; Se a primeira tecla for "0" ou maior, vai para entrada única
+
+    ; Se a primeira tecla for menor que "0", repete a entrada
+                          JMP         ESCOLHER_COORDENADA
+
+    COLUNA_ENTRADA_UNICA: 
+                          SUB         AL, '0'                     ; Ajusta para índice (0 a 9)
+                          MOV         DL, AL                      ; Armazena coluna em DL
+
+                          ADD         BX, DX                      ; Adiciona a coluna ao índice de linha em BX
+
+    ; Verifica se a coordenada já foi escolhida
+                          MOV         AL, MATRIZ_TIRO[BX]
+                          CMP         AL, '0'
+                          JE          COORDENADA_REPETIDA
+                          CMP         AL, '1'
+                          JE          COORDENADA_REPETIDA
+
+    ; Carrega o valor da matriz principal para verificar acerto/erro
+                          MOV         AL, MATRIZ_1[BX]            ; Carrega o valor da MATRIZ_1 no índice calculado
+
+    ; Verifica o conteúdo em MATRIZ_1 e registra em MATRIZ_TIRO
+                          CMP         AL, '1'                     ; Verifica se é um navio ('O')
+                          pula_linha
+                          pula_linha
+                          CALL        LIMPAR
+                          JE          ACERTOU
+                          JMP         ERRADO
+
+    ERRADO:               
+                        MOV         MATRIZ_TIRO[BX], '0'; Marca como erro (água) na MATRIZ_TIRO
+                        MOV AH, 9
+                        LEA DX, MSG_ERROU
+                        INT 21H                                 ; Macro para mensagem de erro
+                        JMP         FIM
+
+    ACERTOU:              
+                        MOV         MATRIZ_TIRO[BX], '1'        ; Marca acerto na MATRIZ_TIRO
+                        DEC         CONTADOR_O
+                        MOV AH, 9
+                        LEA DX, MSG_ACERTOU
+                        INT 21H                  ; Decrementa o contador de 'O'
+                                                    ; Macro para mensagem de acerto
+
+    FIM:                  
+    
+                          POP_T
+                          RET
+
+    COORDENADA_REPETIDA:  ; Exibe mensagem de coordenada repetida
+        MOV AH, 09H
+        LEA DX, MSG_REPETIDO
+        INT 21H
+        JMP ESCOLHER_COORDENADA
+
+COMPARA_MATRIZ ENDP
+
 
 APRESENTACAO PROC
     ; Posiciona o cursor para a mensagem de boas-vindas (linha 10, coluna 22)
@@ -275,74 +377,10 @@ APRESENTACAO PROC
     RET
 APRESENTACAO ENDP
 
-; Função para gerar uma posição aleatória entre 0 e 99
-GERA_POSICAO PROC
-    MOV AH, 0                     ; Lê o contador de ticks do relógio do sistema
-    INT 1AH
-    MOV AX, DX                    ; Usa o valor de DX como base para o número aleatório
-    MOV CX, 100                   ; Define o divisor para o valor máximo (100 para 0-99)
-    XOR DX, DX                    ; Limpa DX antes da divisão
-    DIV CX                        ; AX = Quociente; DX = Resto
-    MOV AX, DX                    ; O valor aleatório está agora em AX
+LIMPAR PROC                                                       ;Funcao feita para a limpeza de telas
+    MOV         AH,0
+    MOV         AL,3
+    INT         10H
     RET
-GERA_POSICAO ENDP
-
-
-PEDE_NOME PROC 
-     ; Exibe mensagem para o nome do usuário
-    MOV NOME, 20
-    MOV AH, 9
-    LEA DX, MSG_NOME
-    INT 21H
-
-    ; Recebe o nome do usuário (máx 20 caracteres)
-    MOV AH, 0AH
-    LEA DX, NOME
-    INT 21H
-    RET
-PEDE_NOME ENDP
-
-
-IMPRIMIR PROC
-    XOR SI, SI
-    XOR BX, BX
-    MOV CH, 10
-IMPRIMECOLUNA:
-    MOV CL, 10
-
-ESCREVELINHA:
-    MOV DL, MATRIZ_INICIAL[SI+BX]
-    OR DL, 30H
-    MOV AH, 2
-    INT 21H
-    MOV DL, ' '
-    INT 21H 
-    MOV DL, ' ' 
-    INT 21H                         
-    INC SI
-    DEC CL
-    JNZ ESCREVELINHA
-    PULA_LINHA
-    ADD BX, 4
-    XOR SI, SI
-
-    DEC CH
-    JNZ IMPRIMECOLUNA
-    RET
-IMPRIMIR ENDP
-
-APAGA PROC                                                       ;Funcao feita para a limpeza de telas
-                          MOV         AH,0
-                          MOV         AL,3
-                          INT         10H
-                          RET
-APAGA ENDP
-
-
-COMPARA PROC
-    
-
-
-COMPARA ENDP
-
+LIMPAR ENDP
 END MAIN
