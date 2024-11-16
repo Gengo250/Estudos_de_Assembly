@@ -90,6 +90,7 @@ ENDM
 
     MSG_ACERTOU DB 'ACERTOU!'
     MSG_ERROU DB 'ERROU'
+    MAPA_ESCOLHIDO DB ?              ; Variável para armazenar o mapa gerado
 
 .CODE
 MAIN PROC
@@ -225,7 +226,7 @@ COMPARA_MATRIZ PROC
     PUSH_T
 
 ESCOLHER_COORDENADA:  
-    ; Exibe mensagem para escolher a linha
+        ; Exibe mensagem para escolher a linha
     MOV AH, 09H
     LEA DX, MSG_LINHA
     INT 21H
@@ -233,19 +234,9 @@ ESCOLHER_COORDENADA:
     ; Entrada para linha
     MOV AH, 01H
     INT 21H
-    SUB AL, '0'                     ; Ajusta para índice (0 a 9)
-    CMP AL, 9
-    JA ESCOLHER_COORDENADA          ; Se AL > 9, entrada inválida
-    MOV BL, AL                      ; Armazena linha em BL
+    SUB AL, '0'              ; Converte ASCII para valor numérico
+    MOV BL, AL               ; Armazena a linha em BL
 
-    ; Calcula o índice de linha na matriz
-    MOV BH, 0                       ; Limpa BH para usar BX como índice de 16 bits
-    MOV AX, BX
-    MOV CX, 10
-    MUL CX                          ; Multiplica linha por 10 (AX = linha * 10)
-    MOV BX, AX                      ; Coloca o resultado em BX
-
-    PULA_LINHA
     ; Exibe mensagem para escolher a coluna
     MOV AH, 09H
     LEA DX, MSG_COLUNA
@@ -254,12 +245,17 @@ ESCOLHER_COORDENADA:
     ; Entrada para coluna
     MOV AH, 01H
     INT 21H
-    SUB AL, '0'                     ; Ajusta para índice (0 a 9)
-    CMP AL, 9
-    JA ESCOLHER_COORDENADA          ; Se AL > 9, entrada inválida
-    MOV DL, AL                      ; Armazena coluna em DL
+    SUB AL, '0'              ; Converte ASCII para valor numérico
+    MOV DL, AL               ; Armazena a coluna em DL
 
-    ADD BX, DX                      ; Adiciona a coluna ao índice de linha em BX
+    ; Calcula o índice da matriz (linha * 10 + coluna)
+    XOR BH, BH               ; Limpa BH para usar BX como 16 bits
+    MOV AX, BX               ; Copia linha para AX (já está em BL)
+    SHL AX, 3                ; Multiplica linha por 8 (linha << 3)
+    ADD AX, BX               ; Soma linha (linha * 8 + linha)
+    ADD AX, BX               ; Soma novamente linha (linha * 10)
+    ADD AX, DX               ; Adiciona o deslocamento da coluna ao índice
+    MOV BX, AX               ; Guarda o índice final em BX
 
     ; Verifica se a coordenada já foi escolhida
     MOV AL, MATRIZ_INICIAL[BX]
@@ -385,4 +381,20 @@ LIMPAR PROC
     INT 10H
     RET
 LIMPAR ENDP
+
+GERAR_MAPA PROC
+    ; Obtém o contador de ticks do relógio do sistema
+    MOV AH, 00H                  ; Função para obter o tempo
+    INT 1AH                      ; Retorna os ticks em DX:AX
+
+    ; Gera um número aleatório de 0 a 3
+    MOV AX, DX                   ; Usa os ticks do relógio como base para o aleatório
+    XOR DX, DX                   ; Limpa DX antes da divisão
+    MOV CX, 4                    ; Número total de mapas (4 mapas: 0, 1, 2, 3)
+    DIV CX                       ; AX = quociente, DX = resto (DX será nosso número aleatório)
+    MOV MAPA_ESCOLHIDO, DL       ; Armazena o número aleatório gerado (0 a 3)
+
+    RET
+GERAR_MAPA ENDP
+
 END MAIN
