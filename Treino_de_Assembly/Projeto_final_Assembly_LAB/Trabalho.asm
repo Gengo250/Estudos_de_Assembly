@@ -4,11 +4,9 @@
 PULA_LINHA macro
     PUSH AX
     PUSH DX
-    MOV AH,02h
-    MOV DL,13      ; Caractere de nova linha (CR)
-    INT 21h
-    MOV DL,10      ; Caractere de nova linha (LF)
-    INT 21h
+    MOV AH,02
+    MOV DL,10
+    INT 21H
     POP DX
     POP AX
 endm
@@ -17,49 +15,88 @@ LIMPA_TELA macro
     MOV AH, 06h                    ; Função para rolar a tela para cima
     XOR AL, AL                     ; AL = 0, rola toda a tela
     XOR CX, CX                     ; Posição inicial no canto superior esquerdo (0,0)
-    MOV DX, 184Fh                  ; Posição final no canto inferior direito (24,79)
+    MOV DX, 184FH                  ; Posição final no canto inferior direito (24,79)
     MOV BH, 07h                    ; Atributo de cor padrão (branco sobre preto)
     INT 10h                        ; Chama interrupção de vídeo para limpar a tela
 endm
 
+PUSH_ALL MACRO
+             PUSH AX
+             PUSH BX
+             PUSH CX
+             PUSH DX
+ENDM
+
 .DATA
 
-    ; Tabuleiros
-    TABULEIRO1 DB 100 DUP(0)       ; Tabuleiro do jogador
-    TABULEIRO2 DB 100 DUP(0)       ; Tabuleiro do oponente (computador)
+     MATRIZ_INICIAL  DB 10 DUP(10 DUP("X")) ; Matriz inicial
 
-    ; Mapas predefinidos para o oponente
-    ; Os mapas estão definidos com valores numéricos 0 e 1
-    MATRIZ     DB 0,1,1,0,0,0,0,1,0,0, 0,0,0,0,0,0,0,1,1,0, 0,0,0,0,0,0,0,1,0,0, 0,0,0,1,1,1,1,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,1,1,1,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0,0,0, 0,1,1,0,0,0,1,1,0,0, 0,0,0,0,0,0,1,0,0,0
-    MATRIZ_2   DB 0,0,0,0,0,0,1,1,1,1, 0,0,1,1,1,0,0,0,0,0, 0,0,0,0,0,0,0,1,1,0, 0,1,1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0,0,0, 0,0,0,0,1,1,0,0,0,0, 0,1,0,0,1,0,0,0,0,0, 0,1,1,0,0,0,0,0,0,0, 0,1,0,0,0,0,0,0,0,0
-    MATRIZ_3   DB 0,0,0,0,0,0,0,0,0,0, 0,0,0,1,1,0,1,1,0,0, 1,0,0,0,0,0,0,0,0,0, 1,1,0,0,0,0,0,0,0,0, 1,0,0,1,1,1,1,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,1,1,1,0,0,0,0,0,0, 1,0,0,0,0,0,0,0,0,0, 1,1,0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0,0,0,0
-    MATRIZ_4   DB 0,0,0,0,0,0,0,1,1,1, 0,0,1,0,0,0,0,0,0,0, 0,0,1,1,0,1,1,0,0,0, 0,0,1,0,0,0,0,0,0,0, 1,1,0,0,0,0,0,0,1,0, 0,0,0,0,0,0,0,0,1,1, 0,0,0,0,0,0,0,0,1,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 1,1,1,1,0,0,0,0,0,0
 
-    ; Variáveis do jogo
-    INFOS DB 0,20 ; INFOS[0]: acertos do jogador, INFOS[1]: tentativas restantes
-    LETRA_NUMERO DB 2 DUP(?)      ; Armazena as coordenadas inseridas pelo jogador
+     MATRIZ     DB '0', '0', '0', '0', '0', '0', '0', '1', '1', '1'    ; Linha 1 fragnata
+                DB '0', '0', '1', '0', '0', '0', '0', '0', '0', '0'    ; Linha 2 
+                DB '0', '0', '1', '1', '0', '1', '1', '0', '0', '0'    ; Linha 3 submarino e hidro
+                DB '0', '0', '1', '0', '0', '0', '0', '0', '0', '0'    ; Linha 4 
+                DB '1', '1', '0', '0', '0', '0', '0', '0', '1', '0'    ; Linha 5 submarino
+                DB '0', '0', '0', '0', '0', '0', '0', '0', '1', '1'    ; Linha 6 hidro
+                DB '0', '0', '0', '0', '0', '0', '0', '0', '1', '0'    ; Linha 7 
+                DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 8
+                DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 9  
+                DB '1', '1', '1', '1', '0', '0', '0', '0', '0', '0'    ; Linha 10 encouracado
 
-    ; Mensagens
+        ;Segundo Mapa
+
+     MATRIZ_2   DB 0, 0, 0, 0, 0, 0, 1, 1, 1, 1    ; Linha 1 encouracado
+                DB 0, 0, 1, 1, 1, 0, 0, 0, 0, 0    ; Linha 2 fragnata
+                DB 0, 0, 0, 0, 0, 0, 0, 1, 1, 0    ; Linha 3 submarino
+                DB 0, 1, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 4 submarino
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 5
+                DB 0, 0, 0, 0, 1, 0, 0, 0, 0, 0    ; Linha 6
+                DB 0, 0, 0, 0, 1, 1, 0, 0, 0, 0    ; Linha 7 hidro
+                DB 0, 1, 0, 0, 1, 0, 0, 0, 0, 0    ; Linha 8
+                DB 0, 1, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 9 hidro  
+                DB 0, 1, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 10
+
+        ;Terceiro Mapa
+
+    MATRIZ_3    DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 1 
+                DB 0, 0, 0, 1, 1, 0, 1, 1, 0, 0    ; Linha 2 submarino e submarino
+                DB 1, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 3 
+                DB 1, 1, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 4 hidro
+                DB 1, 0, 0, 1, 1, 1, 1, 0, 0, 0    ; Linha 5 encouracado
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 6
+                DB 0, 1, 1, 1, 0, 0, 0, 0, 0, 0    ; Linha 7 fragnata
+                DB 1, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 8
+                DB 1, 1, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 9 hidro  
+                DB 1, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 10
+
+        ;Quarto Mapa
+
+    MATRIZ_4    DB 0, 0, 0, 0, 0, 0, 0, 1, 1, 1    ; Linha 1 fragnata
+                DB 0, 0, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 2 
+                DB 0, 0, 1, 1, 0, 1, 1, 0, 0, 0    ; Linha 3 submarino e hidro
+                DB 0, 0, 1, 0, 0, 0, 0, 0, 0, 0    ; Linha 4 
+                DB 1, 1, 0, 0, 0, 0, 0, 0, 1, 0    ; Linha 5 submarino
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 1, 1    ; Linha 6 hidro
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 1, 0    ; Linha 7 
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 8
+                DB 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    ; Linha 9  
+                DB 1, 1, 1, 1, 0, 0, 0, 0, 0, 0    ; Linha 10 encouracado
+
+
+
+
     MSG_NOME DB "Informe seu nome: $"
-    MSG_POS DB "Entre com uma posicao (coluna letra A-J e linha numero 0-9): $"
-    MSG_OCUPADA DB "ERROU! $"
+    MSG_POS DB "Entre com uma posicao (linha e coluna, de 0 a 9): $"
+    MSG_OCUPADA DB "Voce ja digito essa posicao, digite outra posicao! $"
     MSG_OK DB "ACERTOU! $"
+    NOME DB 20 DUP(0)               ; Espaço para armazenar o nome do usuário
+    LINHA DB ?                      ; Armazena a linha inserida pelo usuário
+    COLUNA DB ?                     ; Armazena a coluna inserida pelo usuário
     MSG_BEM_VINDO DB 'BEM-VINDO AO JOGO DE GUERRA NAVAL!$'
     MSG_AUTORES1 DB 'Desenvolvido por:$'
     MSG_AUTORES2 DB 'Miguel Gengo RA:24009007$'
     MSG_AUTORES3 DB 'Ramon Batista RA:24787061$'
     MSG_CONTINUE DB 'Pressione qualquer tecla para continuar...$'
-    MSG_TENTATIVAS DB "Tentativas restantes: $"
-    MSG_ACERTOS DB "Acertos: $"
-    MSG_VITORIA DB "Voce venceu! Parabens!$"
-    MSG_DERROTA DB "Voce perdeu! Tente novamente.$"
-    MSG_JA_ATIROU DB "Voce ja atirou nesta posicao!$"
-
-    NOME DB 20 DUP(0)               ; Espaço para armazenar o nome do usuário
-
-    ; Caracteres para exibir o tabuleiro
-    NUMEROS DB '  A B C D E F G H I J $'
-    LINHA DB 13,10,'$'
 
 .CODE
 MAIN PROC
@@ -70,15 +107,84 @@ MAIN PROC
     CALL APRESENTACAO
     CALL PEDE_NOME
 
-    ; Inicializa variáveis do jogo
-    MOV INFOS[0], 0      ; Acertos
-    MOV INFOS[1], 20     ; Tentativas restantes
 
-    ; Seleciona um dos mapas aleatoriamente
-    CALL SELECIONA_MAPA
+    ; Loop para pedir posições 20 vezes
+    MOV CX, 20
 
-    ; Inicia o jogo
-    CALL JOGO
+
+POSICAO_LOOP:
+
+    PUSH_ALL
+
+    CALL APAGA
+    CALL IMPRIMIR
+    ; Exibe mensagem para inserir a posição
+
+
+    MOV AH, 9
+    LEA DX, MSG_POS
+    INT 21H
+    PULA_LINHA
+
+    ; Recebe a linha
+    MOV AH, 1           ; Função para ler um caractere
+    INT 21H
+    SUB AL, '0'         ; Converte ASCII para valor numérico
+    MOV LINHA, AL
+    
+
+    ; Recebe a coluna
+    MOV AH, 1           ; Função para ler um caractere
+    INT 21H
+    SUB AL, '0'         ; Converte ASCII para valor numérico
+    MOV COLUNA, AL
+
+    ; Calcula o índice da matriz 10x10: índice = linha * 10 + coluna
+    MOV AL, LINHA
+    MOV BL, 10
+    MUL BL              ; AL = linha * 10
+    ADD AL, COLUNA      ; AL = linha * 10 + coluna
+    MOV SI, AX          ; Guarda o índice na matriz
+
+    ; Verifica se a posição já está ocupada na matriz que eh exibida
+    MOV AL, MATRIZ_INICIAL[SI]
+    CMP AL, "1"
+    JE POSICAO_OCUPADA
+
+
+     ; Matriz livre, e verfica se o usuaaio acertout
+    MOV AL, MATRIZ[SI]
+    CMP AL, "1"
+    JE ACERTOU
+    JNE ERROU
+
+ACERTOU:
+    MOV MATRIZ_INICIAL[SI], 1
+    MOV AH, 9
+    LEA DX, MSG_OK
+    INT 21H
+    JMP PROXIMA_ITERACAO
+
+ERROU:
+    MOV MATRIZ_INICIAL[SI], 0
+    MOV AH, 9
+    LEA DX, MSG_OK
+    INT 21H
+    JMP PROXIMA_ITERACAO
+
+
+POSICAO_OCUPADA:
+    ; Exibe mensagem que o usuario ja digitou esse numero
+    MOV AH, 9
+    LEA DX, MSG_OCUPADA
+    INT 21H
+    JMP POSICAO_LOOP
+
+
+    
+
+PROXIMA_ITERACAO:
+    LOOP POSICAO_LOOP
 
     ; Termina o programa
     MOV AH, 4CH
@@ -86,7 +192,6 @@ MAIN PROC
 
 MAIN ENDP
 
-; ----------------------------------------------
 APRESENTACAO PROC
     ; Posiciona o cursor para a mensagem de boas-vindas (linha 10, coluna 22)
     MOV AH, 02h
@@ -170,289 +275,74 @@ APRESENTACAO PROC
     RET
 APRESENTACAO ENDP
 
-; ----------------------------------------------
-; Procedimento para pedir o nome do jogador
+; Função para gerar uma posição aleatória entre 0 e 99
+GERA_POSICAO PROC
+    MOV AH, 0                     ; Lê o contador de ticks do relógio do sistema
+    INT 1AH
+    MOV AX, DX                    ; Usa o valor de DX como base para o número aleatório
+    MOV CX, 100                   ; Define o divisor para o valor máximo (100 para 0-99)
+    XOR DX, DX                    ; Limpa DX antes da divisão
+    DIV CX                        ; AX = Quociente; DX = Resto
+    MOV AX, DX                    ; O valor aleatório está agora em AX
+    RET
+GERA_POSICAO ENDP
+
+
 PEDE_NOME PROC 
-    ; Exibe mensagem para o nome do usuário
+     ; Exibe mensagem para o nome do usuário
+    MOV NOME, 20
     MOV AH, 9
     LEA DX, MSG_NOME
     INT 21H
 
     ; Recebe o nome do usuário (máx 20 caracteres)
-    MOV AH, 0Ah
+    MOV AH, 0AH
     LEA DX, NOME
     INT 21H
     RET
 PEDE_NOME ENDP
 
-; ----------------------------------------------
-; Procedimento para selecionar um mapa aleatório para o oponente
-SELECIONA_MAPA PROC
-    CALL GERA_POSICAO        ; Gera um número aleatório entre 0 e 3
-    MOV BX, AX
-    AND BX, 03h              ; Garante que BX esteja entre 0 e 3
-    CMP BX, 0
-    JE MAPA1
-    CMP BX, 1
-    JE MAPA2
-    CMP BX, 2
-    JE MAPA3
-    CMP BX, 3
-    JE MAPA4
-    JMP MAPA1                ; Por segurança, default para MAPA1
 
-MAPA1:
-    LEA SI, MATRIZ
-    JMP COPIA_MAPA
-
-MAPA2:
-    LEA SI, MATRIZ_2
-    JMP COPIA_MAPA
-
-MAPA3:
-    LEA SI, MATRIZ_3
-    JMP COPIA_MAPA
-
-MAPA4:
-    LEA SI, MATRIZ_4
-
-COPIA_MAPA:
-    LEA DI, TABULEIRO2
-    CLD                     ; Garante que a direção é crescente
-    MOV CX, 100
-    REP MOVSB               ; Copia 100 bytes do mapa selecionado para TABULEIRO2
-    RET
-SELECIONA_MAPA ENDP
-
-; ----------------------------------------------
-; Procedimento para gerar um número aleatório entre 0 e 3
-GERA_POSICAO PROC
-    MOV AH, 2Ch             ; Lê o relógio do sistema
-    INT 21h
-    MOV AL, DH              ; Usa os segundos como base para o número aleatório
-    RET
-GERA_POSICAO ENDP
-
-; ----------------------------------------------
-; Procedimento principal do jogo
-JOGO PROC
-    ; Loop principal do jogo
-    MOV CX, 20              ; Número de tentativas
-JOGO_LOOP:
-    LIMPA_TELA
-    CALL IMPRIME1           ; Imprime o tabuleiro do jogador
-    CALL MOSTRA_INFOS       ; Mostra tentativas restantes e acertos
-    CALL CORDENADAS         ; Lê as coordenadas do jogador
-    CALL POSICIONA          ; Processa o tiro no tabuleiro do oponente
-
-    PUSH CX                 ; Salva CX antes de chamar VERIFICA_JOGO1
-    CALL VERIFICA_JOGO1     ; Verifica se o jogador ganhou
-    POP CX                  ; Restaura CX
-
-    CMP AL, 1
-    JE VITORIA
-    LOOP JOGO_LOOP
-    JMP DERROTA
-
-VITORIA:
-    MOV AH, 9
-    LEA DX, MSG_VITORIA
-    INT 21H
-    JMP FIM_JOGO
-
-DERROTA:
-    MOV AH, 9
-    LEA DX, MSG_DERROTA
-    INT 21H
-
-FIM_JOGO:
-    RET
-JOGO ENDP
-
-; ----------------------------------------------
-; Procedimento para mostrar informações do jogo
-MOSTRA_INFOS PROC
-    ; Mostra tentativas restantes
-    MOV AH, 9
-    LEA DX, MSG_TENTATIVAS
-    INT 21H
-    MOV AL, INFOS[1]
-    ADD AL, '0'
-    MOV DL, AL
-    MOV AH, 2
-    INT 21H
-    PULA_LINHA
-
-    ; Mostra acertos
-    MOV AH, 9
-    LEA DX, MSG_ACERTOS
-    INT 21H
-    MOV AL, INFOS[0]
-    ADD AL, '0'
-    MOV DL, AL
-    MOV AH, 2
-    INT 21H
-    PULA_LINHA
-    RET
-MOSTRA_INFOS ENDP
-
-; ----------------------------------------------
-; Procedimento para ler e validar as coordenadas
-CORDENADAS PROC
-TENTA_NOVAMENTE:
-    ; Exibe mensagem para inserir a posição
-    MOV AH, 9
-    LEA DX, MSG_POS
-    INT 21H
-    PULA_LINHA
-
-    ; Recebe a coluna (letra A-J)
-    MOV AH, 1
-    INT 21H
-    MOV LETRA_NUMERO[0], AL
-    MOV DL, AL
-    CMP DL, 'A'
-    JL TENTA_NOVAMENTE
-    CMP DL, 'J'
-    JG TENTA_NOVAMENTE
-    SUB DL, 'A'        ; Converte para número 0-9
-    MOV BL, DL
-
-    ; Recebe a linha (número 0-9)
-    MOV AH, 1
-    INT 21H
-    MOV LETRA_NUMERO[1], AL
-    MOV AL, LETRA_NUMERO[1]
-    SUB AL, '0'
-    CMP AL, 0
-    JL TENTA_NOVAMENTE
-    CMP AL, 9
-    JG TENTA_NOVAMENTE
-    MOV BH, AL
-
-    ; Calcula o índice na matriz
-    MOV AL, BH         ; AL = linha
+IMPRIMIR PROC
+    XOR SI, SI
+    XOR BX, BX
+    MOV CH, 10
+IMPRIMECOLUNA:
     MOV CL, 10
-    MUL CL             ; AX = linha * 10
-    MOV BL, BL         ; BL já tem a coluna
-    ADD AL, BL         ; AL = linha * 10 + coluna
-    MOV SI, AX         ; SI = índice na matriz
 
-    RET
-CORDENADAS ENDP
-
-; ----------------------------------------------
-; Procedimento para processar o tiro no tabuleiro do oponente
-POSICIONA PROC
-    ; Verifica se já atirou nesta posição
-    MOV AL, TABULEIRO1[SI]
-    CMP AL, 2
-    JE JA_ATIROU
-    CMP AL, 3
-    JE JA_ATIROU
-
-    ; Verifica se acertou um navio
-    MOV AL, TABULEIRO2[SI]
-    CMP AL, 1
-    JE ACERTOU
-
-    ; Errou o tiro
-    MOV TABULEIRO1[SI], 3    ; Marca como erro no tabuleiro do jogador
-    DEC INFOS[1]             ; Decrementa tentativas restantes
-    MOV AH, 9
-    LEA DX, MSG_OCUPADA
-    INT 21H
-    JMP FIM_POSICIONA
-
-ACERTOU:
-    MOV TABULEIRO1[SI], 2    ; Marca como acerto no tabuleiro do jogador
-    MOV TABULEIRO2[SI], 2    ; Marca como acertado no tabuleiro do oponente
-    INC INFOS[0]             ; Incrementa acertos
-    DEC INFOS[1]             ; Decrementa tentativas restantes
-    MOV AH, 9
-    LEA DX, MSG_OK
-    INT 21H
-    JMP FIM_POSICIONA
-
-JA_ATIROU:
-    ; Já atirou nesta posição
-    MOV AH, 9
-    LEA DX, MSG_JA_ATIROU
-    INT 21H
-
-FIM_POSICIONA:
-    RET
-POSICIONA ENDP
-
-; ----------------------------------------------
-; Procedimento para verificar se o jogador ganhou
-VERIFICA_JOGO1 PROC
-    MOV DX, 100
-    MOV SI, 0
-    MOV AL, 1    ; Assume que ganhou
-VERIFICA_LOOP:
-    MOV BL, TABULEIRO2[SI]
-    CMP BL, 1
-    JE NAO_GANHOU
-    INC SI
-    DEC DX
-    JNZ VERIFICA_LOOP
-    RET
-
-NAO_GANHOU:
-    MOV AL, 0    ; Não ganhou ainda
-    RET
-VERIFICA_JOGO1 ENDP
-
-; ----------------------------------------------
-; Procedimento para imprimir o tabuleiro do jogador
-IMPRIME1 PROC
-    ; Imprime o tabuleiro do jogador com números nas linhas e letras nas colunas
-    PULA_LINHA
-    MOV AH, 9
-    LEA DX, NUMEROS
-    INT 21H
-    PULA_LINHA
-
-    MOV CH, 0       ; Linha inicial (0)
-    MOV SI, 0       ; Índice na matriz
-IMPRIME_LINHAS:
+ESCREVELINHA:
+    MOV DL, MATRIZ_INICIAL[SI+BX]
+    OR DL, 30H
     MOV AH, 2
-    MOV DL, CH
-    ADD DL, '0'
-    INT 21H         ; Imprime o número da linha
-    MOV CL, 10      ; Colunas (0-9)
-IMPRIME_COLUNAS:
+    INT 21H
     MOV DL, ' '
-    INT 21H
-    MOV AL, TABULEIRO1[SI]
-    CMP AL, 2
-    JE MARCA_X
-    CMP AL, 3
-    JE MARCA_TIL
-    MOV DL, '.'
-    INT 21H
-    JMP PROXIMA_COLUNA
-
-MARCA_X:
-    MOV DL, 'X'
-    INT 21H
-    JMP PROXIMA_COLUNA
-
-MARCA_TIL:
-    MOV DL, '~'
-    INT 21H
-
-PROXIMA_COLUNA:
+    INT 21H 
+    MOV DL, ' ' 
+    INT 21H                         
     INC SI
     DEC CL
-    JNZ IMPRIME_COLUNAS
+    JNZ ESCREVELINHA
     PULA_LINHA
-    INC CH
-    CMP CH, 10
-    JL IMPRIME_LINHAS
-    RET
-IMPRIME1 ENDP
+    ADD BX, 4
+    XOR SI, SI
 
-; ----------------------------------------------
+    DEC CH
+    JNZ IMPRIMECOLUNA
+    RET
+IMPRIMIR ENDP
+
+APAGA PROC                                                       ;Funcao feita para a limpeza de telas
+                          MOV         AH,0
+                          MOV         AL,3
+                          INT         10H
+                          RET
+APAGA ENDP
+
+
+COMPARA PROC
+    
+
+
+COMPARA ENDP
+
 END MAIN
