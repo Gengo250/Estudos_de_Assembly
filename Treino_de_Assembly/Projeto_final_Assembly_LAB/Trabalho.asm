@@ -158,7 +158,7 @@ LACO_FORA1:
 
     ; Separador de coluna (opcional)
      MOV DL, '|'
-     INT 21h
+    INT 21h
 
 LACO_DENTRO1:
     ; Atribui a DL um dos elementos da matriz
@@ -199,7 +199,7 @@ IMPRIME_0:
 
 CONTINUA1:
     ; Espaço entre colunas
-    MOV DL, ''
+    MOV DL, ' '
     INT 21h
 
     ; Próxima coluna
