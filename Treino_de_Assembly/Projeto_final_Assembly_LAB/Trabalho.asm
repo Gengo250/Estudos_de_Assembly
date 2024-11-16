@@ -27,15 +27,15 @@ POP_T MACRO
 ENDM
 
 .DATA
-    COLUNAS      DB "  [0][1][2][3][4][5][6][7][8][9] $"
+    COLUNAS      DB "   0|1|2|3|4|5|6|7|8|9$"
          
     ESPACE       DB 10,13,"$"
-    MSG_LINHA    DB "ESCOLHA A LINHA (0 a 9): $"
-    MSG_COLUNA   DB "ESCOLHA A COLUNA (0 a 9): $"
-    ACERTO       DB "ACERTOU $"
-    ERROU        DB "ERROU $"
+    MSG_LINHA    DB "DIGITE UMA LINHA (0 a 9): $"
+    MSG_COLUNA   DB "DIGITE UMA COLUNA (0 a 9): $"
+    ACERTO       DB "ACERTOU! $"
+    ERROU        DB "ERROU! $"
     MSG_FIM      DB "Jogo terminado! Todos os navios foram afundados! $"
-    MSG_REPETIDO DB "Insira outra posicao, posicao ja escolhida $"
+    MSG_REPETIDO DB "Voce ja digitoou essa posicao, digite outra $"
     MATRIZ_1    DB '0', '1', '1', '0', '0', '0', '0', '1', '0', '0'    ; Linha 1 sub
                 DB '0', '0', '0', '0', '0', '0', '0', '1', '1', '0'    ; Linha 2 hidro
                 DB '0', '0', '0', '0', '0', '0', '0', '1', '0', '0'    ; Linha 3
@@ -79,7 +79,7 @@ ENDM
                 DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 8
                 DB '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'    ; Linha 9  
                 DB '1', '1', '1', '1', '0', '0', '0', '0', '0', '0'    ; Linha 10 encouracado
-    MATRIZ_TIRO  DB 10 DUP(10 DUP('X'))                                              ; Inicializa uma matriz 10x10 com '*'
+    MATRIZ_INICIAL  DB 10 DUP(10 DUP('X'))                                              ; Inicializa uma matriz 10x10 com '*'
     CONTADOR_O   DB 19                                                               ; Inicializa o contador de 'O' (25 'O' na MATRIZ_1)
 
     MSG_BEM_VINDO DB 'BEM-VINDO AO JOGO DE GUERRA NAVAL!$'
@@ -162,7 +162,7 @@ LACO_FORA1:
 
 LACO_DENTRO1:
     ; Atribui a DL um dos elementos da matriz
-    MOV DL, MATRIZ_TIRO[SI + BX]
+    MOV DL, MATRIZ_INICIAL[SI + BX]
 
     ; Verifica o valor e imprime
     CMP DL, 'X'     ; Posição não escolhida
@@ -262,28 +262,28 @@ ESCOLHER_COORDENADA:
     ADD BX, DX                      ; Adiciona a coluna ao índice de linha em BX
 
     ; Verifica se a coordenada já foi escolhida
-    MOV AL, MATRIZ_TIRO[BX]
+    MOV AL, MATRIZ_INICIAL[BX]
     CMP AL, 'X'
     JNE COORDENADA_REPETIDA
 
     ; Carrega o valor da matriz principal para verificar acerto/erro
     MOV AL, MATRIZ_1[BX]            ; Carrega o valor da MATRIZ_1 no índice calculado
 
-    ; Verifica o conteúdo em MATRIZ_1 e registra em MATRIZ_TIRO
+    ; Verifica o conteúdo em MATRIZ_1 e registra em MATRIZ_INICIAL
     CMP AL, '1'                     ; Verifica se é um navio ('1')
     CALL LIMPAR
     JE ACERTOU
     JMP ERRADO
 
 ERRADO:               
-    MOV MATRIZ_TIRO[BX], '0'        ; Marca como erro (água) na MATRIZ_TIRO
+    MOV MATRIZ_INICIAL[BX], '0'        ; Marca como erro (água) na MATRIZ_INICIAL
     MOV AH, 09H
     LEA DX, ERROU
     INT 21H
     JMP FIM
 
 ACERTOU:              
-    MOV MATRIZ_TIRO[BX], '1'        ; Marca acerto na MATRIZ_TIRO
+    MOV MATRIZ_INICIAL[BX], '1'        ; Marca acerto na MATRIZ_INICIAL
     DEC CONTADOR_O                  ; Decrementa o contador de navios
     MOV AH, 09H
     LEA DX, ACERTO
@@ -294,10 +294,12 @@ FIM:
     RET
 
 COORDENADA_REPETIDA:  ; Exibe mensagem de coordenada repetida
+    PULA_LINHA
     MOV AH, 09H
     LEA DX, MSG_REPETIDO
     INT 21H
     JMP ESCOLHER_COORDENADA
+    PULA_LINHA
 
 COMPARA_MATRIZ ENDP
 
