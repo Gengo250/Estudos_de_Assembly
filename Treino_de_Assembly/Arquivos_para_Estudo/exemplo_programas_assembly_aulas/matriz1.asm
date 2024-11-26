@@ -26,7 +26,7 @@ MAIN PROC
     MOV DS,AX
     LEA BX,VETOR
     MOV [BX],1
-    ;XOR AX,AX          ;inicializa AX com zero
+    XOR AX,AX          ;inicializa AX com zero
     XOR SI,SI             ;inicializa o indexador de coluna
     MOV BX,16          ;BX indica o 1o. elemento da linha 3
     MOV CX,4           ;CX contem o número de elementos de linha
