@@ -114,6 +114,65 @@ WordToString ENDP
 
 ; Procedimento para exibir a matriz transposta
 DisplayMatrix PROC
+    ;Exibe a mensagem "Matriz Original:"
+    MOV AH, 09h               ; Função DOS para exibir string
+    LEA DX, msgLinha1Original 
+    INT 21h
+
+     ; Linha 1
+    MOV AX, [matrizOriginal]       
+    LEA DI, bufferElemento
+    CALL WordToString
+    MOV AH, 09h
+    LEA DX, bufferElemento
+    INT 21h
+
+    ; Espaço entre elementos
+    MOV AH, 02h               ; Função DOS para exibir caractere
+    MOV DL, ' '               ; Espaço
+    INT 21h
+
+    MOV AX, [matrizOriginal+2]     
+    CALL WordToString
+    MOV AH, 09h
+    LEA DX, bufferElemento
+    INT 21h
+
+    ; Nova linha
+    MOV AH, 02h
+    MOV DL, 13                ; Carriage Return
+    INT 21h
+    MOV DL, 10                ; Line Feed
+    INT 21h
+    
+    ; Linha 2
+    MOV AX, [matrizOriginal+4]     
+    LEA DI, bufferElemento
+    CALL WordToString
+    MOV AH, 09h
+    LEA DX, bufferElemento
+    INT 21h
+
+    ; Espaço entre elementos
+    MOV AH, 02h
+    MOV DL, ' '
+    INT 21h
+
+    MOV AX, [matrizOriginal+6]     
+    LEA DI, bufferElemento
+    CALL WordToString
+    MOV AH, 09h
+    LEA DX, bufferElemento
+    INT 21h
+
+    ; Nova linha
+    MOV AH, 02h
+    MOV DL, 13                ; Carriage Return
+    INT 21h
+    MOV DL, 10                ; Line Feed
+    INT 21h
+
+
     ; Exibe a mensagem "Matriz Transposta:"
     MOV AH, 09h               ; Função DOS para exibir string
     LEA DX, msgLinha1Transposta
