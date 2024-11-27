@@ -6,7 +6,7 @@ TITLE MatrizMaxMin
     ; Definição da matriz 4x4 de palavras (16 bits)
     matriz  DW  12, 7, 3, 15     ; Linha 1
             DW  8, 22, 14, 5     ; Linha 2
-            DW  19, 2, 11, 6     ; Linha 3
+            DW  19, 2, 11, 98     ; Linha 3
             DW  10, 9, 4, 20     ; Linha 4
 
     ; Variáveis para armazenar o maior e o menor valor
