@@ -44,12 +44,6 @@ MAIN PROC
     MOV AH, 09h
     INT 21h
 
-    MOV AH, 02h
-    MOV DL, 13                      ; Carriage Return
-    INT 21h
-    MOV DL, 10                      ; Line Feed
-    INT 21h
-
     LEA SI, somaLinhas
     MOV CX, 4                       ; Número de somas de linhas
     CALL DisplaySums

@@ -58,7 +58,7 @@ RotateLeft PROC
     ; Save registers
     PUSH AX
     PUSH BX
-    PUSH CX
+    PUSH CX ; cx =2
     PUSH SI
 
     ; Rotate vector[0..4] to the left by one position
